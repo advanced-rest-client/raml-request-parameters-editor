@@ -6,7 +6,7 @@
 
 An element responsible for displaying a form of query / uri parameters. It produces a request URL
 by altering the one provided in the `url` property. The `url` property has to be a APIs base URL
-and the endpoint's relative URL. In short absoluteUrl.
+and the endpoint's relative URL. In short absoluteUri.
 
 The element is a form element and it will validate if all parameters that are marked as required
 are filled. You can call the `validate()` function manually to check form validity.
@@ -19,12 +19,13 @@ This element handles logic for URL and params change. For view is responsible th
 <raml-request-parameters-editor
   query-parameters="[[method.queryParameters]]"
   uri-parameters="[[method.allUriParameters]]"
-  url="[[method.absoluteUrl]]"
+  url="[[method.absoluteUri]]"
   value="{{url}}"></raml-request-parameters-editor>
 ```
 
 Note: the `allUriParameters` property used in the example is not a standard RAML's JS parser
 property. It has to be computed value of all URI parameters from all traits and security schemes.
+The same is for the `absoluteUri` which will be produced by `raml-js-parser`.
 
 ### Validation
 This element implements `Polymer.IronValidatableBehavior`. You can call `validate()` function
