@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../paper-input/paper-input.html">
   <link rel="import" href="../raml-request-parameters-editor.html">
 
-  <style>
+  <style is="custom-style">
   html,
   body {
     margin: 0;
@@ -39,6 +39,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   .url-value {
     margin-top: 40px;
   }
+
+  :root {
+    --raml-request-parameters-editor-subheader: {
+      @apply(--paper-font-subhead);
+    };
+
+    --inline-documentation-color: rgba(0, 0, 0, 0.54);
+    --inline-documentation-color: rgba(63, 81, 181, 0.87);
+    --raml-request-parameters-editor-input-label-color: rgba(0, 0, 0, 0.87);
+  }
+
+  [main] {
+    margin-left: 16px;
+  }
+
   </style>
 </head>
 <body unresolved>
