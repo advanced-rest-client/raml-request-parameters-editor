@@ -1,0 +1,87 @@
+#%RAML 1.0
+title: My API with Types
+mediaType: application/json
+baseUri: https://{env}.domain.com
+baseUriParameters:
+  env:
+    displayName: Environment
+    type: string
+    enum: [staging, api]
+    example: staging
+types:
+  Org:
+    type: object
+    properties:
+      onCall: Alertable # inherits all properties from type `Alertable`
+      Head: Manager # inherits all properties from type `Manager`
+  Person:
+    type: object
+    discriminator: kind # reference to the `kind` property of `Person`
+    properties:
+      firstname: string
+      lastname: string
+      title?: string
+      kind: string # may be used to differenciate between classes that extend from `Person`
+  Phone:
+    type: string
+    pattern: "^[0-9|-]+$" # defines pattern for the content of type `Phone`
+  Manager:
+    type: Person # inherits all properties from type `Person`
+    properties:
+      reports: Person[] # inherits all properties from type `Person`; array type where `[]` is a shortcut
+      phone:  Phone
+  Admin:
+    type: Person # inherits all properties from type `Person`
+    properties:
+      clearanceLevel:
+        enum: [ low, high ]
+  AlertableAdmin:
+    type: Admin # inherits all properties from type `Admin`
+    properties:
+      phone: Phone # inherits all properties from type `Phone`; uses shortcut syntax
+  Alertable: Manager | AlertableAdmin # union type; either a `Manager` or `AlertableAdmin`
+/{orgId}:
+  get:
+    queryParameters:
+      q:
+        type: string
+        example: addClass+in:file+language:js+repo:jquery/jquery
+        required: true
+        description: |
+          The search terms. This can be any combination of the supported code search parameters: 'Search In' Qualifies which fields are searched.
+          With this qualifier you can restrict the search to just the file contents, the file path, or both.
+          'Languages' Searches code based on the language it's written in. 'Forks' Filters repositories based on the number of forks, and/or whether code from forked repositories should be included in the results at all.
+        displayName: q
+        maxLength: 120
+      sort:
+        example: sort=stars
+        required: true
+        type: string
+      order:
+        required: true
+        type: string
+        enum: [desc, asc]
+    responses:
+      200:
+        body:
+          application/json:
+            type: Org # reference to global type definition
+            example:
+              onCall:
+                firstname: nico
+                lastname: ark
+                kind: admin
+                clearanceLevel: low
+                phone: "12321"
+              Head:
+                firstname: nico
+                lastname: ark
+                kind: manager
+                reports:
+                  -
+                    firstname: nico
+                    lastname: ark
+                    kind: admin
+                phone: "123-23"
+  /people:
+    get:

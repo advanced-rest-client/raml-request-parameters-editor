@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor.svg?branch=master)](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor)  
+[![Build Status](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor)  
 
 # raml-request-parameters-editor
 
@@ -41,12 +41,10 @@ Query parameters validation criteria are set according to the spec.
 Custom property | Description | Default
 ----------------|-------------|----------
 `--raml-request-parameters-editor` | Mixin applied to the element | `{}`
-`--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
-`--raml-request-parameters-editor-predefined-label-color` | Color of the predefinied parameter name label | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-docs-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-predefined-row` | Mixin applied to each row of the form | `{}`
 `--raml-request-parameters-editor-subheader` | Mixin applied to section's subheader | `--paper-font-subhead`
-`--form-label` | Mixin applied to the predefinied parameter name label | `{}`
+`--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
+`--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
+`--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
 
 Also, use variables and misins defined for `paper-input` to style inputs, and
 `paper-dropdown-menu`, `paper-listbox`, `paper-item` to style dropdown menus.
@@ -59,7 +57,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
 | url-value-changed | Fired when the editor changed it's `value` which is the URL. | value **String** - The URL. |
 # raml-request-parameters-form
 
-
 The `raml-request-parameters-form` element is responsible for displaying the form od URI / query
 parameters. It is meant to work with the `raml-request-parameters-editor`. See its docs to
 learn how to use this element.
@@ -71,8 +68,6 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--raml-request-parameters-form` | Mixin applied to the element | `{}`
 `--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
-`--raml-request-parameters-editor-predefined-label-color` | Color of the predefinied parameter name label | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-docs-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-predefined-row` | Mixin applied to each row of the form | `{}`
-`--form-label` | Mixin applied to the predefinied parameter name label | `{}`
+`--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
+`--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
 
