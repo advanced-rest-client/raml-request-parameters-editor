@@ -214,7 +214,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         return [];
       }
       return array.map(function(item) {
-        if (typeof item.default !== 'undefined' && !item.value) {
+        if (item.required && typeof item.default !== 'undefined' && !item.value) {
           item.value = item.default;
         }
         if (typeof item.value === 'undefined' && item.required) {
@@ -226,9 +226,9 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           if (item.value && item.value.indexOf && item.value.indexOf(item.name + '=') === 0) {
             item.value = item.value.substr(item.name.length + 1);
           }
-        }
-        if (typeof item.value === 'undefined' && item.enum && item.enum.length) {
-          item.value = item.enum[0];
+          if (typeof item.value === 'undefined' && item.enum && item.enum.length) {
+            item.value = item.enum[0];
+          }
         }
         if (item.value && typeof item.value === 'string') {
           item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
