@@ -18,10 +18,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../iron-test-helpers/test-helpers.js"></script>
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
-    <!-- Step 1: import the element to test -->
+    <link rel="import" href="../../raml-js-parser/raml-js-parser.html">
     <link rel="import" href="../raml-request-parameters-editor.html">
   </head>
   <body>
+
+    <test-fixture id="parser">
+      <template>
+        <raml-js-parser normalize-raml></raml-js-parser>
+      </template>
+    </test-fixture>
 
     <test-fixture id="basic">
       <template>
@@ -30,11 +36,72 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
-    /* global suite, test, fixture, assert */
+    /* global suite, test, fixture, assert, TestHelpers */
     suite('basic', function() {
-      test('`raml-request-parameters-editor` should be initialized', function() {
-        var element = fixture('basic');
-        assert.equal(element.isAttached, true, 'element.isAttached equals true');
+
+      var element;
+      setup(function(done) {
+        var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+        element = fixture('basic');
+        var parser = fixture('parser');
+        parser.loadApi(baseUrl + 'test.raml')
+        .then(function() {
+          element.queryParameters =
+            parser.get('latestJson.specification.resources.0.methods.0.queryParameters');
+          element.url = parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
+          TestHelpers.forceXIfStamp(element);
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
+      });
+
+      test('Should compute `_renderQueryParameters`', function() {
+        assert.isArray(element._renderQueryParameters, '_renderQueryParameters is computed');
+        assert.lengthOf(element._renderQueryParameters, 3, '_renderQueryParameters has 3 items');
+      });
+
+      test('Should compute `hasQueryParameters`', function() {
+        assert.isTrue(element.hasQueryParameters, 'hasQueryParameters is true');
+      });
+
+      test('Should no compute `_renderUriParameters`', function() {
+        assert.isUndefined(element._renderUriParameters, '_renderUriParameters is not computed');
+      });
+
+      test('Should compute `hasUriParameters`', function() {
+        assert.isFalse(element.hasUriParameters, 'hasUriParameters is false');
+      });
+
+      test('Should compute `urlParams`', function() {
+        assert.isArray(element.urlParams, 'urlParams is computed');
+        assert.lengthOf(element.urlParams, 2, 'urlParams has 2 items');
+        assert.equal(element.urlParams[0], 'env', 'Param #1 is env');
+        assert.equal(element.urlParams[1], 'orgId', 'Param #2 is orgId');
+      });
+
+      test('Should compute `urlSearchRegexp`', function() {
+        assert.typeOf(element.urlSearchRegexp, 'regexp', 'urlSearchRegexp is computed');
+      });
+
+      test('Should decode URL query parameters', function() {
+        assert.equal(element._renderQueryParameters[0].value,
+          'addClass in:file language:js repo:jquery/jquery', 'value is decoded');
+      });
+
+      test('Should strip parameter name from example value', function() {
+        assert.equal(element._renderQueryParameters[1].value, 'stars');
+      });
+
+      test('Should accept first enum as value', function() {
+        assert.equal(element._renderQueryParameters[2].value, 'desc');
+      });
+
+      test('Should compute URL value', function() {
+        var url = 'https://{env}.domain.com/{orgId}?q=addClass+in%3Afile+language%3Ajs+' +
+          'repo%3Ajquery%2Fjquery&sort=stars&order=desc';
+        assert.equal(element.value, url);
       });
     });
     </script>
