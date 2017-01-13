@@ -222,7 +222,7 @@ Custom property | Description | Default
     serialize: function() {
       return this.$.form.serialize();
     },
-
+    // Opens the documentation for item.
     _openDocs: function(e) {
       var model = e.model;
       var collapse = this.$.form.querySelector('.param-value:nth-child(' + (model.index + 1) +
@@ -232,7 +232,7 @@ Custom property | Description | Default
       }
       collapse.opened = !collapse.opened;
     },
-
+    // Computes placeholder value for the item
     _computePlacdeholder: function(record) {
       var object = record.base;
       if (!object) {
@@ -242,16 +242,13 @@ Custom property | Description | Default
         return 'Example: ' + object.examples[0];
       }
     },
-
+    // Computes if the input's lable should always float (to use placeholder)
     _computeFloatLabel: function(record) {
-      var object = record.base;
-      if (!object) {
+      var placeholder = this._computePlacdeholder(record);
+      if (!placeholder) {
         return false;
       }
-      if (!!object.examples && object.examples.length && object.examples[0]) {
-        return true;
-      }
-      return false;
+      return true;
     }
   });
   </script>
