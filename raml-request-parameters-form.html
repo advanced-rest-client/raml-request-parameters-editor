@@ -37,10 +37,8 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--raml-request-parameters-form` | Mixin applied to the element | `{}`
 `--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
-`--raml-request-parameters-editor-predefined-label-color` | Color of the predefinied parameter name label | `rgba(0, 0, 0, 0.87)`
 `--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-predefined-row` | Mixin applied to each row of the form | `{}`
-`--form-label` | Mixin applied to the predefinied parameter name label | `{}`
+`--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
 
 @group RAML Elements
 @element raml-request-parameters-form
@@ -57,6 +55,10 @@ Custom property | Description | Default
       --paper-input-container-label: {
         color: var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.48));
       }
+    }
+
+    .param-value {
+      @apply(--raml-request-parameters-editor-row);
     }
 
     .param-value .input {
