@@ -14,7 +14,6 @@ the License.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="raml-request-parameters-form.html">
 <!--
@@ -83,18 +82,16 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     h3 {
       @apply(--raml-request-parameters-editor-subheader);
     }
-
     </style>
-    <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
 
     <section hidden$="[[!hasUriParameters]]">
       <h3>URI parameters</h3>
-      <raml-request-parameters-form id="uriParametersForm" narrow="[[narrow]]" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="uriParametersForm" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
     </section>
 
     <section hidden$="[[!hasQueryParameters]]">
       <h3>Query parameters</h3>
-      <raml-request-parameters-form id="queryParametersForm" narrow="[[narrow]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="queryParametersForm" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
     </section>
   </template>
   <script>
@@ -165,19 +162,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       value: {
         type: String,
         notify: true
-      },
-      /**
-       * If set it will renders the view in the narrow layout.
-       */
-      narrow: {
-        type: Boolean,
-        value: false,
-        notify: true
-      },
-      // A widith below which the `narrow` property will be set to true.
-      narrowWidth: {
-        type: String,
-        value: '768px'
       },
       // A node on which this element add it's listeners.
       _eventTarget: HTMLElement
