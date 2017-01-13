@@ -77,12 +77,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <style>
     :host {
       display: block;
-
       @apply(--raml-request-parameters-editor);
-
-      --raml-request-parameters-editor-subheader: {
-        @apply(--paper-font-subhead);
-      }
     }
 
     h3 {
@@ -234,6 +229,9 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         }
         if (typeof item.value === 'undefined' && item.enum && item.enum.length) {
           item.value = item.enum[0];
+        }
+        if (item.value && typeof item.value === 'string') {
+          item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
         }
         return Object.assign({}, item);
       });
