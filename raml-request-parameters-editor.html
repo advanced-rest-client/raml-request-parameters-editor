@@ -14,7 +14,6 @@ the License.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="raml-request-parameters-form.html">
 <!--
@@ -57,12 +56,10 @@ Query parameters validation criteria are set according to the spec.
 Custom property | Description | Default
 ----------------|-------------|----------
 `--raml-request-parameters-editor` | Mixin applied to the element | `{}`
-`--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
-`--raml-request-parameters-editor-predefined-label-color` | Color of the predefinied parameter name label | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-docs-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
-`--raml-request-parameters-editor-predefined-row` | Mixin applied to each row of the form | `{}`
 `--raml-request-parameters-editor-subheader` | Mixin applied to section's subheader | `--paper-font-subhead`
-`--form-label` | Mixin applied to the predefinied parameter name label | `{}`
+`--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
+`--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
+`--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
 
 Also, use variables and misins defined for `paper-input` to style inputs, and
 `paper-dropdown-menu`, `paper-listbox`, `paper-item` to style dropdown menus.
@@ -77,29 +74,22 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <style>
     :host {
       display: block;
-
       @apply(--raml-request-parameters-editor);
-
-      --raml-request-parameters-editor-subheader: {
-        @apply(--paper-font-subhead);
-      }
     }
 
     h3 {
       @apply(--raml-request-parameters-editor-subheader);
     }
-
     </style>
-    <iron-media-query query="(max-width: [[narrowWidth]])" query-matches="{{narrow}}"></iron-media-query>
 
     <section hidden$="[[!hasUriParameters]]">
       <h3>URI parameters</h3>
-      <raml-request-parameters-form id="uriParametersForm" narrow="[[narrow]]" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="uriParametersForm" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
     </section>
 
     <section hidden$="[[!hasQueryParameters]]">
       <h3>Query parameters</h3>
-      <raml-request-parameters-form id="queryParametersForm" narrow="[[narrow]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="queryParametersForm" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
     </section>
   </template>
   <script>
@@ -171,19 +161,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         type: String,
         notify: true
       },
-      /**
-       * If set it will renders the view in the narrow layout.
-       */
-      narrow: {
-        type: Boolean,
-        value: false,
-        notify: true
-      },
-      // A widith below which the `narrow` property will be set to true.
-      narrowWidth: {
-        type: String,
-        value: '768px'
-      },
       // A node on which this element add it's listeners.
       _eventTarget: HTMLElement
     },
@@ -219,7 +196,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         return [];
       }
       return array.map(function(item) {
-        if (typeof item.default !== 'undefined' && !item.value) {
+        if (item.required && typeof item.default !== 'undefined' && !item.value) {
           item.value = item.default;
         }
         if (typeof item.value === 'undefined' && item.required) {
@@ -231,9 +208,12 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           if (item.value && item.value.indexOf && item.value.indexOf(item.name + '=') === 0) {
             item.value = item.value.substr(item.name.length + 1);
           }
+          if (typeof item.value === 'undefined' && item.enum && item.enum.length) {
+            item.value = item.enum[0];
+          }
         }
-        if (typeof item.value === 'undefined' && item.enum && item.enum.length) {
-          item.value = item.enum[0];
+        if (item.value && typeof item.value === 'string') {
+          item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
         }
         return Object.assign({}, item);
       });

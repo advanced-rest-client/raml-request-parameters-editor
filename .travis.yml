@@ -4,19 +4,24 @@ dist: trusty
 node_js: stable
 before_script:
 - npm install --silent bower polymer-cli
-- bower install --silent
+- ./node_modules/.bin/bower install --silent
 addons:
   sauce_connect: false
 script:
-- ./node_modules/.bin/polymer lint raml-request-parameters-editor.html
-# - ./node_modules/.bin/polymer test --plugin sauce --job-name "raml-request-parameters-editor:${TRAVIS_BRANCH}" --build-number=${TRAVIS_BUILD_NUMBER}
+- "./node_modules/.bin/polymer lint raml-request-parameters-editor.html"
+- ./node_modules/.bin/polymer test --plugin sauce --job-name "raml-request-parameters-editor:${TRAVIS_BRANCH}"
+  --build-number=${TRAVIS_BUILD_NUMBER}
 cache:
   directories:
   - bower_components
   - node_modules
 branches:
   only:
-    - stage
-    - develop
+  - stage
+  - develop
 after_success:
-  - node tasks/ci.js
+- node tasks/ci.js
+env:
+  global:
+  - secure: iOKpqQ2Fqz+WMw/uVyMXREnmuVwTCedmk/ahcvGqzyiUiAUq6X11A16MDJRZRHiuzpDbBvaR1uOxD6JrbMytU2ZLlhjpTnsiiBDrcPJrLUvRSqE8FBiOIVhfrbZXlwPYUMUtwPDrXtX/xrXZh5a8JK6EnPDytxVcRMlL8L1o71jysH+CGHnwTZ3hoNvB8Bp4a6yyTPt6AoT6C+E98JTZFzLU6bg4dy9QJQdlPMZANgVdHs5LBmju0CAm8kWMw6Kl5Xtpge5dksY6paGwrmRnC3E1nKgvINiwnyngL6SYV+r39VSvp/U0Ijeo2Yd4vzL+Z9Gc074OpilFCl2EVSpKh2sQdmGThbZsMPiZudRgqej3+6CMPO/rFrM9jHXkpwS+ssRgdqC9R+TPcdKNWOOvaaTaadwPI4JuHO099J/iRXShjxjJTi2ZKtAHxOfndoFsGt4wYd1uN8z/hg557ja8aQEQ2r9O03KXil1mubHQB4kOy9stsqhktLazj5gFvU+96Bv859f758cJ4L4NIS5ozpOqf0GW9pBbEu2vXcHO7cdDbzVS8BM1CreM7JMrpKxUMJw9VgRBEtH3F3MXfP9oHxTNOVlMnCBoHO4xjw+f+DUrIjHEVVE76z29u81alhslENWhSfDz/1LV8JjcyNKDm4VgGxDv6Iy7W9K79pE6pFg=
+  - secure: YqBcTJhWU4XLt4omF4SaLknHlL5M4FOwg66RBN5EspjNofeJZCjyrIV3ewnffoc+/IxXEUVu9VHBl2R8fEGHbH80eKwZPSusNVSHK2my03/sqycxVvDL6j1Jo0uLpCDlRqgLmbl+R8aPirCPh7IgACqaP+9zI1grXePziN0jTMph7dOeKBokbIx5tQEHqYiOu85CprT6t0nSFe4Ga10x/eRUmTDb4efDtINIf2RY0krUVgIrTnq4NLd5uzYfZiCb7knBGEAGTOOUD+3aTYI7DfyMVf0O1tnrEr3CUCPPC5iotIXzzJZDP+CdDb1APOvfZFXb03gfj7Aw+ID2Yq4V/hN/d7VSKQmEzp0/ILfkgNA+s0/62oIbJaL2YpU9eapLTlm8jQJBHzUvIJH1xPsdBrX0m0O7+Rk7pwj+Zp/rUbqHY0G4en2CO3b0ZvrFzGHb852aGZQVabvb6CBAN8kmuvTw1OFp8pFgzVEGDxSVscA5YnB+7/otEW97VQLWL1TWnf2hl8doqLHYYMVUw1AM/h6B6nJX0J1i8k+OqMgj+12OUDIbbZkTFew8RzG3CdQXVO3wcQ9J/XqrYiofFddQFMgVbkGnrUpv13Rz42Twx/WgYoMkzC61Y39EwSzZDOM//fiTz6KuKbzZP/7chgR9GrF+VzgHvdQYj0TC7aLEOcg=
