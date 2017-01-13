@@ -125,7 +125,19 @@ Custom property | Description | Default
             </template>
             <template is="dom-if" if="[[!_computeIsEnum(item.enum)]]">
               <div class="input">
-                <paper-input no-label-float="[[!narrow]]" label="[[_computeInputLabel(item.*, narrow)]]" id="rrpv-[[index]]" value="{{item.value}}" required="[[item.required]]" pattern="[[item.pattern]]" name="[[item.name]]" auto-validate type="[[_computeInputType(item.type)]]" min="[[item.minimum]]" max="[[item.maximum]]"></paper-input>
+                <paper-input
+                  no-label-float="[[!narrow]]"
+                  label="[[_computeInputLabel(item.*, narrow)]]"
+                  id="rrpv-[[index]]"
+                  value="{{item.value}}"
+                  required="[[item.required]]"
+                  pattern="[[item.pattern]]"
+                  name="[[item.name]]"
+                  auto-validate
+                  type="[[_computeInputType(item.type)]]"
+                  min="[[item.minimum]]"
+                  max="[[item.maximum]]"
+                  maxlength="[[item.maxLength]]"></paper-input>
               </div>
             </template>
             <div class="docs" hidden$="[[!hasValue(item.description)]]">
