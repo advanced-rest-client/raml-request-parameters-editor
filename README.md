@@ -70,4 +70,5 @@ Custom property | Description | Default
 `--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
 `--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
 `--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
+`--raml-request-parameters-form-optional-toggle-button` | Mixin applied to a "toggle optional parameters" button | `{}`
 

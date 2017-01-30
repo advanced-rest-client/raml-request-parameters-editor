@@ -1,6 +1,6 @@
 {
   "name": "raml-request-parameters-editor",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "Apache-2.0 OR CC-BY-4.0",
   "description": "An element responsible for displaying a form of query / uri parameters",
   "devDependencies": {
