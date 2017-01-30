@@ -57,8 +57,23 @@ Custom property | Description | Default
       }
     }
 
+    .required paper-input {
+      --paper-input-container-label: {
+        color: var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72));
+      }
+    }
+
     .param-value {
       @apply(--raml-request-parameters-editor-row);
+      display: none;
+    }
+
+    .param-value.required {
+      display: initial;
+    }
+
+    .param-value.with-optional {
+      display: initial;
     }
 
     .param-value .input {
@@ -107,10 +122,14 @@ Custom property | Description | Default
     .value-input paper-input {
       @apply(--layout-flex);
     }
+
+    .optional-toggle-button {
+      font-size: 13px;
+    }
     </style>
     <form is="iron-form" id="form">
       <template is="dom-repeat" items="{{parameters}}">
-        <div class="param-value">
+        <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <template is="dom-if" if="[[_computeIsEnum(item.enum)]]">
                 <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]">
@@ -153,6 +172,9 @@ Custom property | Description | Default
           </div>
         </div>
       </template>
+      <template is="dom-if" if="[[hasOptionalParameters]]">
+        <a href="#" class="optional-toggle-button" on-tap="_toggleOptionalParams">[[_computeToggleParametersLabel(optionalOpened)]]</a>
+      </template>
     </form>
   </template>
   <script>
@@ -164,6 +186,21 @@ Custom property | Description | Default
     properties: {
       // A list of parameters to display. It may be URI or query parameters array.
       parameters: Array,
+      /**
+       * Computed value. True if current parameters set has any optional value.
+       */
+      hasOptionalParameters: {
+        type: Boolean,
+        value: false,
+        computed: '_computeHasOptionalParameters(parameters.*)'
+      },
+      /**
+       * Set to true to show optional parameters.
+       */
+      optionalOpened: {
+        type: Boolean,
+        value: false
+      }
     },
 
     // Computes if given array item has enum values.
@@ -249,6 +286,46 @@ Custom property | Description | Default
         return false;
       }
       return true;
+    },
+    /**
+     * Computes if any of the parameters aren't required.
+     */
+    _computeHasOptionalParameters: function(record) {
+      if (!record || !record.base || !record.base.length) {
+        return false;
+      }
+      var list = record.base;
+      for (var i = 0, len = list.length; i < len; i++) {
+        if (!list[i].required) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+
+    _computeRowClass: function(item, optionalOpened) {
+      var clazz = 'param-value';
+      if (item.required) {
+        clazz += ' required';
+      }
+      if (optionalOpened) {
+        clazz += ' with-optional';
+      }
+      return clazz;
+    },
+
+    _toggleOptionalParams: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.optionalOpened = !this.optionalOpened;
+    },
+
+    _computeToggleParametersLabel: function(optionalOpened) {
+      if (optionalOpened) {
+        return 'Hide optional parameters';
+      }
+      return 'Show optional parameters';
     }
   });
   </script>
