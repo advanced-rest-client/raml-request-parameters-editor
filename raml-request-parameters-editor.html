@@ -195,6 +195,13 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       if (!array || !array.length) {
         return [];
       }
+      return this._transformQueryParameters(array);
+    },
+    /**
+     * Transforms query parameters that are received from the RAML parser into
+     * internal data structure.
+     */
+    _transformQueryParameters: function(array) {
       return array.map(function(item) {
         if (item.required && typeof item.default !== 'undefined' && !item.value) {
           item.value = item.default;
