@@ -66,14 +66,17 @@ Custom property | Description | Default
 
     .param-value {
       @apply(--raml-request-parameters-editor-row);
+
+    }
+
+    .param-value.optional {
       display: none;
     }
 
     .param-value.required {
-      display: initial;
     }
 
-    .param-value.with-optional {
+    .param-value.optional.with-optional {
       display: initial;
     }
 
@@ -310,6 +313,8 @@ Custom property | Description | Default
       var clazz = 'param-value';
       if (item.required) {
         clazz += ' required';
+      } else {
+        clazz += ' optional';
       }
       if (optionalOpened) {
         clazz += ' with-optional';
