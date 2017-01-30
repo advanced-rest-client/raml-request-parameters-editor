@@ -35,31 +35,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
+    <test-fixture id="basicForm">
+      <template>
+        <raml-request-parameters-form></raml-request-parameters-form>
+      </template>
+    </test-fixture>
+
     <script>
     /* global suite, test, fixture, assert, TestHelpers */
-    suite('basic', function() {
+    suite('basic raml-request-parameters-editor', function() {
 
       var element;
+      var parsedRaml;
+      var apiUrlRaml;
+
       setup(function(done) {
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
         element = fixture('basic');
-        var parser = fixture('parser');
-        parser.loadApi(baseUrl + 'test.raml')
-        .then(function() {
-          element.queryParameters =
-            parser.get('latestJson.specification.resources.0.methods.0.queryParameters');
-          element.url = parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
+        if (!parsedRaml) {
+          var parser = fixture('parser');
+          parser.loadApi(baseUrl + 'test.raml')
+          .then(function() {
+            parsedRaml = parser.get('latestJson.specification.resources.0.methods.0.queryParameters');
+            apiUrlRaml =  parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
+            element.queryParameters = parsedRaml;
+            element.url = apiUrlRaml;
+            TestHelpers.forceXIfStamp(element);
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
+        } else {
+          element.queryParameters = parsedRaml;
+          element.url = apiUrlRaml;
           TestHelpers.forceXIfStamp(element);
           done();
-        })
-        .catch(function(e) {
-          done(e);
-        });
+        }
       });
 
       test('Should compute `_renderQueryParameters`', function() {
         assert.isArray(element._renderQueryParameters, '_renderQueryParameters is computed');
-        assert.lengthOf(element._renderQueryParameters, 3, '_renderQueryParameters has 3 items');
+        assert.lengthOf(element._renderQueryParameters, 4, '_renderQueryParameters has 4 items');
       });
 
       test('Should compute `hasQueryParameters`', function() {
@@ -102,6 +119,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var url = 'https://{env}.domain.com/{orgId}?q=addClass+in%3Afile+language%3Ajs+' +
           'repo%3Ajquery%2Fjquery&sort=stars&order=desc';
         assert.equal(element.value, url);
+      });
+    });
+
+    suite('basic raml-request-parameters-form', function() {
+      var editor;
+      var element;
+      var parsedRaml;
+      // var apiUrlRaml;
+      setup(function(done) {
+        var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+        element = fixture('basicForm');
+        editor = fixture('basic');
+        if (!parsedRaml) {
+          var parser = fixture('parser');
+          parser.loadApi(baseUrl + 'test.raml')
+          .then(function() {
+            parsedRaml = editor._transformQueryParameters(
+              parser.get('latestJson.specification.resources.0.methods.0.queryParameters'));
+            // apiUrlRaml =  parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
+            element.parameters = parsedRaml;
+            // element.url = apiUrlRaml;
+            TestHelpers.forceXIfStamp(element);
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
+        } else {
+          element.parameters = parsedRaml;
+          // element.url = apiUrlRaml;
+          TestHelpers.forceXIfStamp(element);
+          done();
+        }
+      });
+
+      test('Should compute `hasOptionalParameters`', function() {
+        assert.isTrue(element.hasOptionalParameters, 'hasOptionalParameters is true');
+      });
+
+      test('Optional parameter is hidden', function() {
+        var list = Polymer.dom(element.root).querySelectorAll('.param-value.optional');
+        assert.lengthOf(list, 1, 'Has one optional item');
+        var display = getComputedStyle(list[0]).getPropertyValue('display');
+        assert.equal(display, 'none', 'Optional property is hidden');
+      });
+
+      test('Toggles hidden properties', function() {
+        element.optionalOpened = true;
+        TestHelpers.forceXIfStamp(element);
+        var list = Polymer.dom(element.root).querySelectorAll('.param-value.optional');
+        assert.lengthOf(list, 1, 'Has one optional item');
+        var display = getComputedStyle(list[0]).getPropertyValue('display');
+        assert.notEqual(display, 'none', 'Optional property is not hidden');
       });
     });
     </script>

@@ -1,3 +1,24 @@
+<a name="0.1.7"></a>
+## [0.1.7](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.5...v0.1.7) (2017-01-30)
+
+
+### Update
+
+* Added new test cases ([68792b3507168326058c348d7244270e5a9846db](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/68792b3507168326058c348d7244270e5a9846db))
+* added the optional class name for optional property ([a652e4f424c81bf86bcb0796041dec7aa4f971f6](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/a652e4f424c81bf86bcb0796041dec7aa4f971f6))
+* Exposed properties transformation function outside the element so the test cases could use it ([d93dc9ea9cb50b776fbe5b77f07e058dad97d913](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/d93dc9ea9cb50b776fbe5b77f07e058dad97d913))
+* now the optional parameters are hidden by default. Added a property to display optional parameters and added a button to the view ([ecfec7ffb189daa49a4748a1ac82081f6bbaae34](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/ecfec7ffb189daa49a4748a1ac82081f6bbaae34))
+* now the optional parameters are hidden by default. Added a property to display optional parameters and added a button to the view ([3f35cf371711b0bbb4101edb5f28bc3740fec7f5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/3f35cf371711b0bbb4101edb5f28bc3740fec7f5))
+* Replaced the display:initial directive with display:block on a form row which IE10 don't understand ([c4bf021c8d37ca5ed9b6e6b97f5bbfd37a454335](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/c4bf021c8d37ca5ed9b6e6b97f5bbfd37a454335))
+
+
+
+<a name="0.1.6"></a>
+## [0.1.6](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.5...v0.1.6) (2017-01-30)
+
+
+
+
 <a name="0.1.5"></a>
 ## [0.1.5](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.4...v0.1.5) (2017-01-13)
 
