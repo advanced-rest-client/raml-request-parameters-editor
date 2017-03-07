@@ -178,9 +178,6 @@ Custom property | Description | Default
           </div>
         </div>
       </template>
-      <template is="dom-if" if="[[hasOptionalParameters]]">
-        <a href="#" class="optional-toggle-button" on-tap="_toggleOptionalParams">[[_computeToggleParametersLabel(optionalOpened)]]</a>
-      </template>
     </form>
   </template>
   <script>
@@ -192,14 +189,6 @@ Custom property | Description | Default
     properties: {
       // A list of parameters to display. It may be URI or query parameters array.
       parameters: Array,
-      /**
-       * Computed value. True if current parameters set has any optional value.
-       */
-      hasOptionalParameters: {
-        type: Boolean,
-        value: false,
-        computed: '_computeHasOptionalParameters(parameters.*)'
-      },
       /**
        * Set to true to show optional parameters.
        */
@@ -297,22 +286,6 @@ Custom property | Description | Default
       }
       return true;
     },
-    /**
-     * Computes if any of the parameters aren't required.
-     */
-    _computeHasOptionalParameters: function(record) {
-      if (!record || !record.base || !record.base.length) {
-        return false;
-      }
-      var list = record.base;
-      for (var i = 0, len = list.length; i < len; i++) {
-        if (!list[i].required) {
-          return true;
-        }
-      }
-
-      return false;
-    },
 
     _computeRowClass: function(item, optionalOpened) {
       var clazz = 'param-value';
@@ -326,18 +299,11 @@ Custom property | Description | Default
       }
       return clazz;
     },
-
-    _toggleOptionalParams: function(e) {
-      e.preventDefault();
-      e.stopPropagation();
+    /**
+     * Toggles visibility of optional parameters.
+     */
+    toggleOptionalParams: function() {
       this.optionalOpened = !this.optionalOpened;
-    },
-
-    _computeToggleParametersLabel: function(optionalOpened) {
-      if (optionalOpened) {
-        return 'Hide optional parameters';
-      }
-      return 'Show optional parameters';
     }
   });
   </script>

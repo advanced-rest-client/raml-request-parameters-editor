@@ -15,6 +15,7 @@ the License.
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
 <link rel="import" href="raml-request-parameters-form.html">
 <!--
 `<raml-request-parameters-editor>`
@@ -80,6 +81,20 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     h3 {
       @apply(--raml-request-parameters-editor-subheader);
     }
+
+    .params-title {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+
+    .params-title h3 {
+      display: inline-block;
+      margin-right: 12px;
+    }
+
+    .params-title paper-checkbox {
+      --paper-checkbox-label-color: rgba(0, 0, 0, 0.54);
+    }
     </style>
 
     <section hidden$="[[!hasUriParameters]]">
@@ -88,8 +103,11 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     </section>
 
     <section hidden$="[[!hasQueryParameters]]">
-      <h3>Query parameters</h3>
-      <raml-request-parameters-form id="queryParametersForm" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
+      <div class="params-title">
+        <h3>Query parameters</h3>
+        <paper-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</paper-checkbox>
+      </div>
+      <raml-request-parameters-form id="queryParametersForm" optional-opened="[[optionalQueryParamsOpened]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
     </section>
   </template>
   <script>
@@ -161,6 +179,19 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         type: String,
         notify: true
       },
+
+      /**
+       * Computed value. True if current query parameters set has any
+       * optional value.
+       */
+      hasOptionalQueryParameters: {
+        type: Boolean,
+        value: false,
+        computed: '_computeHasOptionalParameters(_renderQueryParameters.*)',
+        notify: true
+      },
+      // If true the optional query parameters will be displayed in the table.
+      optionalQueryParamsOpened: Boolean,
       // A node on which this element add it's listeners.
       _eventTarget: HTMLElement
     },
@@ -511,7 +542,23 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       }
 
       return validUri && validUrl;
-    }
+    },
+
+    /**
+     * Computes if any of the query parameters are required.
+     */
+    _computeHasOptionalParameters: function(record) {
+      if (!record || !record.base || !record.base.length) {
+        return false;
+      }
+      var list = record.base;
+      for (var i = 0, len = list.length; i < len; i++) {
+        if (!list[i].required) {
+          return true;
+        }
+      }
+      return false;
+    },
   });
   </script>
 </dom-module>
