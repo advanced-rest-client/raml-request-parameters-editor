@@ -281,7 +281,11 @@ Custom property | Description | Default
         return;
       }
       if (!!object.examples && object.examples.length && object.examples[0]) {
-        return 'Example: ' + object.examples[0];
+        var example = object.examples[0];
+        if (example.indexOf && example.indexOf(object.name + '=') !== -1) {
+          example = example.substr(object.name.length + 1);
+        }
+        return 'Example: ' + example;
       }
     },
     // Computes if the input's lable should always float (to use placeholder)
