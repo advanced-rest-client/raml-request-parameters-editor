@@ -1,3 +1,19 @@
+<a name="0.1.10"></a>
+## [0.1.10](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.7...v0.1.10) (2017-03-13)
+
+
+### Fix
+
+* Fixed an issue when examples in the placeholder properies contained property name which was missleading users ([bd226b106f26518fffd3439268f209e4cfa27bff](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/bd226b106f26518fffd3439268f209e4cfa27bff))
+
+### Update
+
+* Updated test ([32761a7fc8023bae2aee92da92ce364d213217ce](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/32761a7fc8023bae2aee92da92ce364d213217ce))
+* Updated the help icon button to be more recognizable ([524d9e1c145544141cbdf6019e9e554160f3098b](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/524d9e1c145544141cbdf6019e9e554160f3098b))
+* Updated the way of showing optional parameters in the parameters table. Now parent app / element controls the parameter and the form elemenet does not contain any controls to change parameters visibility ([778bdde8037d8f10be500e930e7f589ec8fabf31](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/778bdde8037d8f10be500e930e7f589ec8fabf31))
+
+
+
 <a name="0.1.9"></a>
 ## [0.1.9](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.7...v0.1.9) (2017-03-07)
 
