@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/raml-request-parameters-editor)  
+
 # raml-request-parameters-editor
 
 `<raml-request-parameters-editor>`
