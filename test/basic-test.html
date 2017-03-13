@@ -120,6 +120,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           'repo%3Ajquery%2Fjquery&sort=stars&order=desc';
         assert.equal(element.value, url);
       });
+
+      test('Should compute `hasOptionalQueryParameters`', function() {
+        assert.isTrue(element.hasOptionalQueryParameters, 'hasOptionalQueryParameters is true');
+      });
     });
 
     suite('basic raml-request-parameters-form', function() {
@@ -152,10 +156,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           TestHelpers.forceXIfStamp(element);
           done();
         }
-      });
-
-      test('Should compute `hasOptionalParameters`', function() {
-        assert.isTrue(element.hasOptionalParameters, 'hasOptionalParameters is true');
       });
 
       test('Optional parameter is hidden', function() {
