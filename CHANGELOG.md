@@ -1,3 +1,18 @@
+<a name="0.1.13"></a>
+## [0.1.13](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.11...v0.1.13) (2017-04-12)
+
+
+### New
+
+* Added empty message info and CSS mixins to style it ([ea6f0045c82243ccaf57568ac83582e8d73d2662](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/ea6f0045c82243ccaf57568ac83582e8d73d2662))
+
+### Update
+
+* Updated raml-js-parser version ([202c8144ababeadb60c05424f31599c41b4fead0](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/202c8144ababeadb60c05424f31599c41b4fead0))
+* Updated test to work with new parser ([8ade2387d95613c07dc800cc961f99666e017993](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/8ade2387d95613c07dc800cc961f99666e017993))
+
+
+
 <a name="0.1.12"></a>
 ## [0.1.12](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.11...v0.1.12) (2017-04-12)
 
