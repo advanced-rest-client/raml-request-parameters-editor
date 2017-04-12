@@ -61,6 +61,8 @@ Custom property | Description | Default
 `--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
 `--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
 `--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
+`--raml-request-parameters-editor-no-params` | Mixin applied to the empty info section | `{}`
+`--raml-request-parameters-editor-no-params-message` | Mixin applied to the empty info paragraph (the message) | `{}`
 
 Also, use variables and misins defined for `paper-input` to style inputs, and
 `paper-dropdown-menu`, `paper-listbox`, `paper-item` to style dropdown menus.
@@ -95,7 +97,19 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     .params-title paper-checkbox {
       --paper-checkbox-label-color: rgba(0, 0, 0, 0.54);
     }
+
+    .empty-message {
+      @apply(--raml-request-parameters-editor-no-params);
+    }
+
+    .empty-message p {
+      @apply(--raml-request-parameters-editor-no-params-message);
+    }
     </style>
+
+    <section hidden$="[[hasParameters]]" class="empty-message">
+      <p>This API doesn't require to declare query or URI parameters.</p>
+    </section>
 
     <section hidden$="[[!hasUriParameters]]">
       <h3>URI parameters</h3>
@@ -156,6 +170,11 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         type: Boolean,
         value: false,
         computed: '_computeHasParameters(uriParameters)'
+      },
+      // Computed value, true if has query or URI parameters.
+      hasParameters: {
+        type: Boolean,
+        computed: '_computeParametersSet(hasUriParameters, hasQueryParameters)'
       },
       /**
        * The absolute URL for the method.
@@ -260,6 +279,10 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     // Computes if passed argument is an array and has values.
     _computeHasParameters: function(params) {
       return !!(params && params instanceof Array && params.length);
+    },
+    // Computes if any parameters are available.
+    _computeParametersSet: function(hasUriParameters, hasQueryParameters) {
+      return hasUriParameters || hasQueryParameters;
     },
 
     _inputChanged: function() {
