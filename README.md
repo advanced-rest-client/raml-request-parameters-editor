@@ -45,6 +45,8 @@ Custom property | Description | Default
 `--raml-request-parameters-editor-input-label-color` | Color of the paper input's labels | `rgba(0, 0, 0, 0.48)`
 `--inline-documentation-color` | Color of the documentation string below the input field. Note that it will appy also `marked-element` styles to this element | `rgba(0, 0, 0, 0.87)`
 `--raml-request-parameters-editor-row` | Mixin applied to each row of the form | `{}`
+`--raml-request-parameters-editor-no-params` | Mixin applied to the empty info section | `{}`
+`--raml-request-parameters-editor-no-params-message` | Mixin applied to the empty info paragraph (the message) | `{}`
 
 Also, use variables and misins defined for `paper-input` to style inputs, and
 `paper-dropdown-menu`, `paper-listbox`, `paper-item` to style dropdown menus.
