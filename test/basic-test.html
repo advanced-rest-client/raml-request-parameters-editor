@@ -19,13 +19,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../iron-test-helpers/mock-interactions.js"></script>
 
     <link rel="import" href="../../raml-js-parser/raml-js-parser.html">
+    <link rel="import" href="../../raml-json-enhance/raml-json-enhance.html">
     <link rel="import" href="../raml-request-parameters-editor.html">
   </head>
   <body>
 
     <test-fixture id="parser">
       <template>
-        <raml-js-parser normalize-raml></raml-js-parser>
+        <raml-js-parser json></raml-js-parser>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="enhancer">
+      <template>
+        <raml-json-enhance></raml-json-enhance>
       </template>
     </test-fixture>
 
@@ -49,29 +56,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var parsedRaml;
       var apiUrlRaml;
 
-      setup(function(done) {
+      suiteSetup(function(done) {
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-        element = fixture('basic');
-        if (!parsedRaml) {
-          var parser = fixture('parser');
-          parser.loadApi(baseUrl + 'test.raml')
-          .then(function() {
-            parsedRaml = parser.get('latestJson.specification.resources.0.methods.0.queryParameters');
-            apiUrlRaml =  parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
-            element.queryParameters = parsedRaml;
-            element.url = apiUrlRaml;
-            TestHelpers.forceXIfStamp(element);
-            done();
-          })
-          .catch(function(e) {
-            done(e);
-          });
-        } else {
-          element.queryParameters = parsedRaml;
-          element.url = apiUrlRaml;
-          TestHelpers.forceXIfStamp(element);
+        var parser = fixture('parser');
+        var enhancer = fixture('enhancer');
+        enhancer.addEventListener('raml-json-enhance-ready', function(e) {
+          var raml = e.detail.json;
+          parsedRaml = raml.resources[0].methods[0].queryParameters;
+          apiUrlRaml =  raml.resources[0].methods[0].absoluteUri;
           done();
-        }
+        });
+
+        parser.loadApi(baseUrl + 'test.raml')
+        .then(function(data) {
+          enhancer.json = data.json.specification;
+        })
+        .catch(function(e) {
+          done(new Error('Parser error: ' + (e.message || 'Some error happened...')));
+        });
+      });
+
+      setup(function(done) {
+        element = fixture('basic');
+        element.queryParameters = parsedRaml;
+        element.url = apiUrlRaml;
+        TestHelpers.forceXIfStamp(element);
+        done();
       });
 
       test('Should compute `_renderQueryParameters`', function() {
@@ -130,32 +140,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var editor;
       var element;
       var parsedRaml;
-      // var apiUrlRaml;
-      setup(function(done) {
+
+      suiteSetup(function(done) {
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+        var parser = fixture('parser');
+        var enhancer = fixture('enhancer');
+        enhancer.addEventListener('raml-json-enhance-ready', function(e) {
+          var raml = e.detail.json;
+          parsedRaml = raml.resources[0].methods[0].queryParameters;
+          done();
+        });
+
+        parser.loadApi(baseUrl + 'test.raml')
+        .then(function(data) {
+          enhancer.json = data.json.specification;
+        })
+        .catch(function(e) {
+          done(new Error('Parser error: ' + (e.message || 'Some error happened...')));
+        });
+      });
+
+      setup(function() {
         element = fixture('basicForm');
         editor = fixture('basic');
-        if (!parsedRaml) {
-          var parser = fixture('parser');
-          parser.loadApi(baseUrl + 'test.raml')
-          .then(function() {
-            parsedRaml = editor._transformQueryParameters(
-              parser.get('latestJson.specification.resources.0.methods.0.queryParameters'));
-            // apiUrlRaml =  parser.get('latestJson.specification.resources.0.methods.0.absoluteUri');
-            element.parameters = parsedRaml;
-            // element.url = apiUrlRaml;
-            TestHelpers.forceXIfStamp(element);
-            done();
-          })
-          .catch(function(e) {
-            done(e);
-          });
-        } else {
-          element.parameters = parsedRaml;
-          // element.url = apiUrlRaml;
-          TestHelpers.forceXIfStamp(element);
-          done();
-        }
+        element.parameters = editor._transformQueryParameters(parsedRaml);
+        TestHelpers.forceXIfStamp(element);
       });
 
       test('Optional parameter is hidden', function() {
