@@ -45,7 +45,8 @@
     "test-fixture": "PolymerElements/test-fixture#^1.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "arc-demo-helpers": "advanced-rest-client/arc-demo-helpers#^1.0.9",
-    "raml-js-parser": "advanced-rest-client/raml-js-parser#^1.1.3"
+    "raml-js-parser": "advanced-rest-client/raml-js-parser#^2.0.0",
+    "raml-json-enhance": "advanced-rest-client/raml-json-enhance#^0.1.7"
   },
   "ignore": [
     "**/.*",
