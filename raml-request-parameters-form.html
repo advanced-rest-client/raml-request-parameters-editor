@@ -13,7 +13,8 @@ the License.
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-form/iron-form.html">
-<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../anypoint-text-field/anypoint-text-field.html">
+<link rel="import" href="../anypoint-styles/dropdown-menu.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
@@ -47,19 +48,20 @@ Custom property | Description | Default
 -->
 <dom-module id="raml-request-parameters-form">
   <template strip-whitespace>
+    <style include="anypoint-dropdown-menu-styles"></style>
     <style include="markdown-styles"></style>
     <style>
      :host {
       display: block;
       @apply(--raml-request-parameters-form);
 
-      --paper-input-container-label: {
+      --anypoint-text-field-container-label: {
         color: var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.48));
       }
     }
 
-    .required paper-input {
-      --paper-input-container-label: {
+    .required anypoint-text-field {
+      --anypoint-text-field-container-label: {
         color: var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72));
       }
     }
@@ -124,7 +126,7 @@ Custom property | Description | Default
     }
 
     .value-input paper-dropdown-menu,
-    .value-input paper-input {
+    .value-input anypoint-text-field {
       @apply(--layout-flex);
     }
 
@@ -138,7 +140,7 @@ Custom property | Description | Default
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <template is="dom-if" if="[[_computeIsEnum(item.enum)]]">
-                <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]">
+                <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]" class="anypoint-dropdown-menu">
                   <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{item.value}}">
                     <template is="dom-repeat" items="[[item.enum]]">
                       <paper-item data-value="[[item]]">[[item]]</paper-item>
@@ -150,7 +152,7 @@ Custom property | Description | Default
             </template>
             <template is="dom-if" if="[[!_computeIsEnum(item.enum)]]">
               <div class="input">
-                <paper-input
+                <anypoint-text-field
                   label="[[_computeInputLabel(item.*)]]"
                   id="rrpv-[[index]]"
                   value="{{item.value}}"
@@ -164,7 +166,7 @@ Custom property | Description | Default
                   maxlength="[[item.maxLength]]"
                   always-float-label="[[_computeFloatLabel(item.*)]]"
                   placeholder="[[_computePlacdeholder(item.*)]]">
-                </paper-input>
+                </anypoint-text-field>
               </div>
               <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!hasValue(item.description)]]" on-tap="_openDocs"></paper-icon-button>
             </template>

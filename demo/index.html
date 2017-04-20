@@ -18,22 +18,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="../../font-roboto/roboto.html">
+
   <link rel="import" href="../../arc-demo-helpers/raml-demo-page.html">
-  <link rel="import" href="../../paper-input/paper-input.html">
+  <link rel="import" href="../../anypoint-text-field/anypoint-text-field.html">
+  <link rel="import" href="../../anypoint-styles/typography.html">
   <link rel="import" href="../raml-request-parameters-editor.html">
 
   <style is="custom-style">
-  html,
+  html {
+    font-size: 62%;
+  }
+
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', 'Noto', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
+    @apply(--anypoint-font-body);
   }
 
   .url-value {
@@ -69,7 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value="{{url}}"></raml-request-parameters-editor>
             <div class="url-value">
               <p>Produced URL value is:</p>
-              <paper-input value="{{url}}" label="Request URL"></paper-input>
+              <anypoint-text-field value="{{url}}" label="Request URL"></anypoint-text-field>
             </div>
         </template>
         <p hidden$="[[isMethod]]">Select a method</p>

@@ -15,7 +15,7 @@ the License.
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
-<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../anypoint-checkbox/anypoint-checkbox.html">
 <link rel="import" href="raml-request-parameters-form.html">
 <!--
 `<raml-request-parameters-editor>`
@@ -119,7 +119,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <section hidden$="[[!hasQueryParameters]]">
       <div class="params-title">
         <h3>Query parameters</h3>
-        <paper-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</paper-checkbox>
+        <anypoint-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</anypoint-checkbox>
       </div>
       <raml-request-parameters-form id="queryParametersForm" optional-opened="[[optionalQueryParamsOpened]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
     </section>
