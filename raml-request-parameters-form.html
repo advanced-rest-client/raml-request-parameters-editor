@@ -137,18 +137,18 @@ Custom property | Description | Default
       <template is="dom-repeat" items="{{parameters}}">
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
-            <template is="dom-if" if="[[_computeIsEnum(item.enum)]]">
-                <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]">
-                  <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{item.value}}">
-                    <template is="dom-repeat" items="[[item.enum]]">
-                      <paper-item data-value="[[item]]">[[item]]</paper-item>
-                    </template>
-                    <paper-item label=" ">(empty value)</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!hasValue(item.description)]]" on-tap="_openDocs"></paper-icon-button>
+            <template is="dom-if" if="[[item.isEnum]]">
+              <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]">
+                <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{item.value}}">
+                  <template is="dom-repeat" items="[[item.enum]]">
+                    <paper-item data-value="[[item]]">[[item]]</paper-item>
+                  </template>
+                  <paper-item label=" ">(empty value)</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
             </template>
-            <template is="dom-if" if="[[!_computeIsEnum(item.enum)]]">
+            <template is="dom-if" if="[[!item.isEnum]]">
               <div class="input">
                 <paper-input
                   label="[[_computeInputLabel(item.*)]]"
@@ -166,16 +166,18 @@ Custom property | Description | Default
                   placeholder="[[_computePlacdeholder(item.*)]]">
                 </paper-input>
               </div>
-              <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!hasValue(item.description)]]" on-tap="_openDocs"></paper-icon-button>
+              <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
             </template>
           </div>
-          <div class="docs" hidden$="[[!hasValue(item.description)]]">
-            <iron-collapse>
-              <marked-element markdown="[[item.description]]">
-                <div class="markdown-html markdown-body"></div>
-              </marked-element>
-            </iron-collapse>
-          </div>
+          <template is="dom-if" if="[[item.hasDescription]]">
+            <div class="docs">
+              <iron-collapse>
+                <marked-element markdown="[[item.description]]">
+                  <div class="markdown-html markdown-body"></div>
+                </marked-element>
+              </iron-collapse>
+            </div>
+          </template>
         </div>
       </template>
     </form>
