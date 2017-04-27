@@ -352,19 +352,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     _applyQueryParams: function(url) {
       var params = this.$.queryParametersForm.serialize();
       for (var paramName in params) {
-        var def = this.getQueryParam(paramName);
         var value = params[paramName];
         if (!value && value !== 0 && value !== null && value !== false) {
-          if (!def || (def && !def.required)) {
-            delete params[paramName];
-          }
+          delete params[paramName];
           continue;
         }
         value = String(value);
         if (value.trim() === '') {
-          if (!def || (def && !def.required)) {
-            delete params[paramName];
-          }
+          delete params[paramName];
           continue;
         }
         params[paramName] = value;
@@ -410,20 +405,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       return encodeURIComponent(str.toString().replace(/\r?\n/g, '\r\n'))
           .replace(/%20/g, '+');
     },
-    // Returns a query parameter definition for given name or null.
-    getQueryParam: function(name) {
-      var qp = this.queryParameters;
-      if (!qp || !qp.length) {
-        return null;
-      }
-      for (var i = 0, len = qp.length; i < len; i++) {
-        if (qp[i].name === name) {
-          return qp[i];
-        }
-      }
-      return null;
-    },
-
     /**
      * A handler for attribute change function for the `url`.
      * It will parse input value and set the parameters values.
