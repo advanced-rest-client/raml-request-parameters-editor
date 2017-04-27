@@ -8,7 +8,7 @@ before_script:
 addons:
   sauce_connect: false
 script:
-- "./node_modules/.bin/polymer lint raml-request-parameters-editor.html"
+- npm run lint
 - ./node_modules/.bin/polymer test --plugin sauce --job-name "raml-request-parameters-editor:${TRAVIS_BRANCH}"
   --build-number=${TRAVIS_BUILD_NUMBER}
 cache:
