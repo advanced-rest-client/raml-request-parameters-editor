@@ -88,7 +88,7 @@ Custom property | Description | Default
     }
 
     .docs {
-      @apply(--paper-font-common-base);
+      @apply(--arc-font-common-base);
       font-size: 13px !important;
       font-weight: 200;
       line-height: 24px;
@@ -140,7 +140,7 @@ Custom property | Description | Default
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <template is="dom-if" if="[[item.isEnum]]">
-              <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required id="rrpv-[[index]]" class="anypoint-dropdown-menu">
+              <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required class="anypoint-dropdown-menu" on-iron-select="_parameterValueChanged">
                 <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{item.value}}">
                   <template is="dom-repeat" items="[[item.enum]]">
                     <paper-item data-value="[[item]]">[[item]]</paper-item>
@@ -154,7 +154,6 @@ Custom property | Description | Default
               <div class="input">
                 <anypoint-text-field
                   label="[[_computeInputLabel(item.*)]]"
-                  id="rrpv-[[index]]"
                   value="{{item.value}}"
                   required="[[item.required]]"
                   pattern="[[item.pattern]]"
@@ -165,7 +164,8 @@ Custom property | Description | Default
                   max="[[item.maximum]]"
                   maxlength="[[item.maxLength]]"
                   always-float-label="[[_computeFloatLabel(item.*)]]"
-                  placeholder="[[_computePlacdeholder(item.*)]]">
+                  placeholder="[[_computePlacdeholder(item.*)]]"
+                  on-input="_parameterValueChanged">
                 </anypoint-text-field>
               </div>
               <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
@@ -199,7 +199,14 @@ Custom property | Description | Default
       optionalOpened: {
         type: Boolean,
         value: false
-      }
+      },
+      /**
+       * The form can display query or URI parameters. When anything change in the form
+       * it will send a corresponding custom event (`query-parameter-changed` or
+       * `uri-parameter-changed`). To make this happen set the value of this property to
+       * either `query` or `uri`.
+       */
+      formType: String
     },
 
     // Computes if given array item has enum values.
@@ -308,6 +315,24 @@ Custom property | Description | Default
      */
     toggleOptionalParams: function() {
       this.optionalOpened = !this.optionalOpened;
+    },
+
+    /**
+     * When query parameter value changes then it will file the `query-parameter-changed` custom
+     * event to inform other observers about this event.
+     */
+    _parameterValueChanged: function(e) {
+      var formType = this.formType;
+      if (!formType || ['query', 'uri'].indexOf(formType) === -1) {
+        return;
+      }
+      var item = e.model.get('item');
+      var name = item.name || item.key;
+      var value = item.value;
+      this.fire(formType + '-parameter-changed', {
+        name: name,
+        value: value
+      });
     }
   });
   </script>

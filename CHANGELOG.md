@@ -1,3 +1,15 @@
+<a name="0.1.15"></a>
+## [0.1.15](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.14...v0.1.15) (2017-04-27)
+
+
+### Update
+
+* Minor performance improvements ([edab4a4148497deda421362855e752b7135dada9](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/edab4a4148497deda421362855e752b7135dada9))
+* Now produced URL will not contain parameters that doesn't have value ([58bc47d3cceaf99d9c28df667a32c1b94c49a29a](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/58bc47d3cceaf99d9c28df667a32c1b94c49a29a))
+* Replace lit command for Travis with package lint command ([0fbce48d7a52887a3d39f2584e97b76ef7ee1e46](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/0fbce48d7a52887a3d39f2584e97b76ef7ee1e46))
+
+
+
 <a name="0.1.14"></a>
 ## [0.1.14](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.13...v0.1.14) (2017-04-12)
 
