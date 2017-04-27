@@ -1,3 +1,23 @@
+<a name="0.1.17"></a>
+## [0.1.17](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.16...v0.1.17) (2017-04-27)
+
+
+
+
+<a name="0.1.16"></a>
+## [0.1.16](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.15...v0.1.16) (2017-04-27)
+
+
+### Update
+
+* Added support for custom event driven communication when setting an URL value ([1b65f4a275925d7064c0e2c2120c307ef603512d](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/1b65f4a275925d7064c0e2c2120c307ef603512d))
+* Added tests for new logic ([85db171f7130c999e9bc947bbc206ea08c4781c8](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/85db171f7130c999e9bc947bbc206ea08c4781c8))
+* Removed _eventTarget property and the element will listen for events on the window object ([ed000503f6be42d2ed704d403ee014f35b0ba122](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/ed000503f6be42d2ed704d403ee014f35b0ba122))
+* Removed adding a new parameter if previously hasn't existed in the form ([e9fc1283499dd66b9754bb270860b80b98c74a16](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/e9fc1283499dd66b9754bb270860b80b98c74a16))
+* Updated mixin name to match ARC styling maixins ([af94fe5a2036d3cd9e6b4d54cd60c9d3c68daff5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/af94fe5a2036d3cd9e6b4d54cd60c9d3c68daff5))
+
+
+
 <a name="0.1.15"></a>
 ## [0.1.15](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.14...v0.1.15) (2017-04-27)
 

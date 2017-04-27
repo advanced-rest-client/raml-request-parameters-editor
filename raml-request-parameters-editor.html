@@ -260,6 +260,24 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       item.isEnum = !!(item.enum && item.enum.length);
       item.hasDescription = !!item.description;
 
+      item.inputLabel = item.displayName || item.name || 'Value';
+      if (item.required) {
+        item.inputLabel += '*';
+      }
+      if (['number', 'integer', 'float'].indexOf(item.type) !== -1) {
+        item.inputType = 'number';
+      } else {
+        item.inputType = 'text';
+      }
+      if (item.examples && item.examples.length && item.examples[0]) {
+        item.inputPlaceholder = 'Example: ' + item.examples[0];
+      } else if (item.example && typeof item.example === 'string') {
+        item.inputPlaceholder = 'Example: ' + item.example;
+      }
+      if (item.inputPlaceholder) {
+        item.inputFloatLabel = true;
+      }
+
       if (item.required && typeof item.default !== 'undefined' && !item.value) {
         item.value = item.default;
       }
