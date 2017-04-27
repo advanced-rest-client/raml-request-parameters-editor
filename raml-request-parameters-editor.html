@@ -113,7 +113,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
 
     <section hidden$="[[!hasUriParameters]]">
       <h3>URI parameters</h3>
-      <raml-request-parameters-form id="uriParametersForm" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="uriParametersForm" form-type="uri" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
     </section>
 
     <section hidden$="[[!hasQueryParameters]]">
@@ -121,7 +121,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         <h3>Query parameters</h3>
         <paper-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</paper-checkbox>
       </div>
-      <raml-request-parameters-form id="queryParametersForm" optional-opened="[[optionalQueryParamsOpened]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
+      <raml-request-parameters-form id="queryParametersForm" form-type="query" optional-opened="[[optionalQueryParamsOpened]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
     </section>
   </template>
   <script>
@@ -210,17 +210,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         notify: true
       },
       // If true the optional query parameters will be displayed in the table.
-      optionalQueryParamsOpened: Boolean,
-      // A node on which this element add it's listeners.
-      _eventTarget: HTMLElement
-    },
-
-    listeners: {
-      'input': '_inputChanged',
-      'change': '_inputChanged',
-      'value': '_inputChanged',
-      'iron-select': '_inputChanged',
-      'dom-change':  '_inputChanged'
+      optionalQueryParamsOpened: Boolean
     },
 
     observers: [
@@ -228,15 +218,15 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     ],
 
     attached: function() {
-      this._eventTarget = Polymer.dom(this).host || document;
-      this.listen(this._eventTarget, 'url-value-changed', '_extValueChangedHandler');
+      this.listen(window, 'url-value-changed', '_extValueChangedHandler');
+      this.listen(window, 'query-parameter-changed', '_queryParameterChangedHandler');
+      this.listen(window, 'uri-parameter-changed', '_uriParameterChangedHandler');
     },
 
     detached: function() {
-      if (!this._eventTarget) {
-        return;
-      }
-      this.unlisten(this._eventTarget, 'url-value-changed', '_extValueChangedHandler');
+      this.unlisten(window, 'url-value-changed', '_extValueChangedHandler');
+      this.unlisten(window, 'query-parameter-changed', '_queryParameterChangedHandler');
+      this.unlisten(window, 'uri-parameter-changed', '_uriParameterChangedHandler');
     },
 
     // Computes a copy of input parameters array
@@ -254,30 +244,43 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     _transformQueryParameters: function(array) {
       return array.map(function(item) {
         item = Object.assign({}, item);
-        item.isEnum = !!(item.enum && item.enum.length);
-        item.hasDescription = !!item.description;
-
-        if (item.required && typeof item.default !== 'undefined' && !item.value) {
-          item.value = item.default;
-        }
-        if (typeof item.value === 'undefined' && item.required) {
-          if (item.examples) {
-            item.value = item.examples[0];
-          } else if (item.example) {
-            item.value = item.example;
-          }
-          if (item.value && item.value.indexOf && item.value.indexOf(item.name + '=') === 0) {
-            item.value = item.value.substr(item.name.length + 1);
-          }
-          if (typeof item.value === 'undefined' && item.isEnum) {
-            item.value = item.enum[0];
-          }
-        }
-        if (item.value && typeof item.value === 'string') {
-          item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
-        }
+        this._createRendedObject(item);
         return item;
-      });
+      }, this);
+    },
+    /**
+     * Creates a render item (with internal data mode) out of RAML definition.
+     *
+     * In complex objects value of properties are passed by reference so the function do not return
+     * the same object.
+     *
+     * @param {Object} item A query or URL parameter value as an output of the RAML parser.
+     */
+    _createRendedObject: function(item) {
+      item.isEnum = !!(item.enum && item.enum.length);
+      item.hasDescription = !!item.description;
+
+      if (item.required && typeof item.default !== 'undefined' && !item.value) {
+        item.value = item.default;
+      }
+      if (typeof item.value === 'undefined' && item.required) {
+        if (item.examples) {
+          item.value = item.examples[0];
+        } else if (item.example) {
+          item.value = item.example;
+        }
+        if (item.value && item.value.indexOf && item.value.indexOf(item.name + '=') === 0) {
+          item.value = item.value.substr(item.name.length + 1);
+        }
+        if (typeof item.value === 'undefined' && item.isEnum) {
+          item.value = item.enum[0];
+        }
+      }
+      if (item.value && typeof item.value === 'string') {
+        item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
+      }
+
+      return item;
     },
 
     // Computes if passed argument is an array and has values.
@@ -287,13 +290,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     // Computes if any parameters are available.
     _computeParametersSet: function(hasUriParameters, hasQueryParameters) {
       return hasUriParameters || hasQueryParameters;
-    },
-
-    _inputChanged: function() {
-      if (this._internalValueChange) {
-        return;
-      }
-      this._processInput();
     },
     /**
      * A function to be called when any value change in forms.
@@ -567,6 +563,72 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       }
       return false;
     },
+
+    /**
+     * Handler for the `query-parameter-changed` event.
+     * It updates value for a single query parameter.
+     */
+    _queryParameterChangedHandler: function(e) {
+      if (this._isChildEvent(e)) {
+        this._processInput();
+        return;
+      }
+      this._updateEventValue('_renderQueryParameters', e);
+    },
+    /**
+     * Handler for the `uri-parameter-changed` event.
+     * It updates value for a single query parameter.
+     */
+    _uriParameterChangedHandler: function(e) {
+      if (this._isChildEvent(e)) {
+        this._processInput();
+        return;
+      }
+      this._updateEventValue('_renderUriParameters', e);
+    },
+    // Checks if the event comes from any of the children.
+    _isChildEvent: function(e) {
+      e = Polymer.dom(e);
+      var path = e.path;
+      for (var i = 0, len = path.length; i < len; i++) {
+        if (path[i] === this) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    /**
+     * Update array value for given type (`_renderQueryParameters` or
+     * `_renderUriParameters`) for given event.
+     */
+    _updateEventValue: function(target, e) {
+      if (e.target === this) {
+        return;
+      }
+      if (e.defaultPrevented) {
+        return;
+      }
+      var name = e.detail.name;
+      if (!name) {
+        return;
+      }
+      var parameters = this[target];
+      if (!parameters || !parameters.length) {
+        return;
+      }
+      for (var i = 0, len = parameters.length; i < len; i++) {
+        var paramName = parameters[i].name || parameters[i].key;
+        if (!paramName) {
+          continue;
+        }
+        if (paramName === name) {
+          this.set([target, i, 'value'], e.detail.value);
+          this._processInput();
+          return;
+        }
+      }
+    }
   });
   </script>
 </dom-module>
