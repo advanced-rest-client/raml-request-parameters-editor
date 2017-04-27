@@ -210,9 +210,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         notify: true
       },
       // If true the optional query parameters will be displayed in the table.
-      optionalQueryParamsOpened: Boolean,
-      // A node on which this element add it's listeners.
-      _eventTarget: HTMLElement
+      optionalQueryParamsOpened: Boolean
     },
 
     listeners: {
@@ -228,15 +226,11 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     ],
 
     attached: function() {
-      this._eventTarget = Polymer.dom(this).host || document;
-      this.listen(this._eventTarget, 'url-value-changed', '_extValueChangedHandler');
+      this.listen(window, 'url-value-changed', '_extValueChangedHandler');
     },
 
     detached: function() {
-      if (!this._eventTarget) {
-        return;
-      }
-      this.unlisten(this._eventTarget, 'url-value-changed', '_extValueChangedHandler');
+      this.unlisten(window, 'url-value-changed', '_extValueChangedHandler');
     },
 
     // Computes a copy of input parameters array
