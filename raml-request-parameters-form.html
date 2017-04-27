@@ -138,7 +138,7 @@ Custom property | Description | Default
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <template is="dom-if" if="[[item.isEnum]]">
-              <paper-dropdown-menu label="[[_computeInputLabel(item.*)]]" name="[[item.name]]" required on-iron-select="_parameterValueChanged">
+              <paper-dropdown-menu label="[[item.inputLabel]]" name="[[item.name]]" required on-iron-select="_parameterValueChanged">
                 <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{item.value}}">
                   <template is="dom-repeat" items="[[item.enum]]">
                     <paper-item data-value="[[item]]">[[item]]</paper-item>
@@ -151,18 +151,18 @@ Custom property | Description | Default
             <template is="dom-if" if="[[!item.isEnum]]">
               <div class="input">
                 <paper-input
-                  label="[[_computeInputLabel(item.*)]]"
+                  label="[[item.inputLabel]]"
                   value="{{item.value}}"
                   required="[[item.required]]"
                   pattern="[[item.pattern]]"
                   name="[[item.name]]"
                   auto-validate
-                  type="[[_computeInputType(item.type)]]"
+                  type="[[item.inputType]]"
                   min="[[item.minimum]]"
                   max="[[item.maximum]]"
                   maxlength="[[item.maxLength]]"
-                  always-float-label="[[_computeFloatLabel(item.*)]]"
-                  placeholder="[[_computePlacdeholder(item.*)]]"
+                  always-float-label="[[item.inputFloatLabel]]"
+                  placeholder="[[item.inputPlaceholder]]"
                   on-input="_parameterValueChanged">
                 </paper-input>
               </div>
@@ -207,53 +207,6 @@ Custom property | Description | Default
       formType: String
     },
 
-    // Computes if given array item has enum values.
-    _computeIsEnum: function(itemEnum) {
-      return !!(itemEnum && itemEnum.length);
-    },
-    // Computes input type attribute based on item's type
-    _computeInputType: function(itemType) {
-      if (!itemType || itemType === 'text') {
-        return 'text';
-      }
-      switch (itemType) {
-        case 'number':
-        case 'integer':
-        case 'float':
-          return 'number';
-        default:
-          return 'text';
-      }
-    },
-    // Computes the name of the label to display in the input field.
-    _computeInputLabel: function(record) {
-      var object = record.base;
-      if (!object) {
-        return;
-      }
-      var label = object.displayName || object.name;
-      if (object.required) {
-        label += '*';
-      }
-      return label;
-    },
-
-    /**
-     * Check if passed object is not empty.
-     * 0 (zero) returns true while empty string returns false.
-     *
-     * @return {Boolean} True/False depending if passed object has a value.
-     */
-    hasValue: function(obj) {
-      if (typeof obj === 'number' && obj === 0) {
-        return true;
-      }
-      if (typeof obj === 'boolean') {
-        return true;
-      }
-      return !!obj;
-    },
-
     // Overidden from Polymer.IronValidatableBehavior. Will set the `invalid`
     // attribute automatically, which should be used for styling.
     _getValidity: function() {
@@ -272,28 +225,6 @@ Custom property | Description | Default
         return;
       }
       collapse.opened = !collapse.opened;
-    },
-    // Computes placeholder value for the item
-    _computePlacdeholder: function(record) {
-      var object = record.base;
-      if (!object) {
-        return;
-      }
-      if (!!object.examples && object.examples.length && object.examples[0]) {
-        var example = object.examples[0];
-        if (example.indexOf && example.indexOf(object.name + '=') !== -1) {
-          example = example.substr(object.name.length + 1);
-        }
-        return 'Example: ' + example;
-      }
-    },
-    // Computes if the input's lable should always float (to use placeholder)
-    _computeFloatLabel: function(record) {
-      var placeholder = this._computePlacdeholder(record);
-      if (!placeholder) {
-        return false;
-      }
-      return true;
     },
 
     _computeRowClass: function(item, optionalOpened) {
