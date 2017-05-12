@@ -136,7 +136,7 @@ Custom property | Description | Default
     }
     </style>
     <form is="iron-form" id="form">
-      <template is="dom-repeat" items="{{parameters}}">
+      <template is="dom-repeat" items="{{parameters}}" items-repeater>
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <template is="dom-if" if="[[item.isEnum]]">
@@ -220,7 +220,8 @@ Custom property | Description | Default
     },
     // Opens the documentation for item.
     _openDocs: function(e) {
-      var model = e.model;
+      var template = this.$.form.querySelector('[items-repeater]');
+      var model = model = template.modelForElement(e.target);
       var collapse = this.$.form.querySelector('.param-value:nth-child(' + (model.index + 1) +
         ') iron-collapse');
       if (!collapse) {
