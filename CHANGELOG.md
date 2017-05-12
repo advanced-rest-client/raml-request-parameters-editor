@@ -1,3 +1,13 @@
+<a name="0.1.20"></a>
+## [0.1.20](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.19...v0.1.20) (2017-05-12)
+
+
+### Fix
+
+* Fixed issue when the help wasn't opening because of error ([d3cf5e9179365f44e6a80a56abdbf6e34e31f490](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/d3cf5e9179365f44e6a80a56abdbf6e34e31f490))
+
+
+
 <a name="0.1.19"></a>
 ## [0.1.19](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.18...v0.1.19) (2017-04-27)
 
