@@ -166,6 +166,7 @@ Custom property | Description | Default
                   on-input="_parameterValueChanged">
                 </paper-input>
               </div>
+              <paper-icon-button title="Add another array value" class="help-icon" suffix icon="arc:add-circle-outline" hidden$="[[!item.isArray]]" on-tap="_addArrayValue"></paper-icon-button>
               <paper-icon-button title="Display documentation" class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
             </template>
           </div>
