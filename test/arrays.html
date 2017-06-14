@@ -43,13 +43,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
-    /* global fixture, assert, TestHelpers, sinon */
-    suite('events', function() {
+    /* global fixture, assert, TestHelpers */
+    suite('array query parameters', function() {
 
       var element;
       var ramlQueryParameters;
       var ramlUriParameters;
       var apiUrlRaml;
+      var parameter;
 
       suiteSetup(function(done) {
         this.timeout(120000);
@@ -73,80 +74,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         });
       });
 
-      setup(function(done) {
+      setup(function() {
         element = fixture('basic');
         element.queryParameters = ramlQueryParameters;
         element.uriParameters = ramlUriParameters;
         element.url = apiUrlRaml;
         TestHelpers.forceXIfStamp(element);
-        done();
+        parameter = element._renderQueryParameters[4];
       });
 
-      test('Should update query parameter from custom event', function() {
-        var ev = new CustomEvent('query-parameter-changed', {
-          'detail': {
-            'name': 'q',
-            'value': 'test'
-          },
-          bubbles: true
-        });
-        document.dispatchEvent(ev);
-        assert.equal(element._renderQueryParameters[0].value, 'test');
+      test('Rendered query parameter should have array value', function() {
+        assert.typeOf(parameter.value, 'array');
       });
 
-      test('Should update uri parameter from custom event', function() {
-        var ev = new CustomEvent('uri-parameter-changed', {
-          'detail': {
-            'name': 'env',
-            'value': 'api'
-          },
-          bubbles: true
-        });
-        document.dispatchEvent(ev);
-        assert.equal(element._renderUriParameters[0].value, 'api');
+      test('Rendered query parameter should have isArray flag', function() {
+        assert.isTrue(parameter.isArray);
       });
 
-      test('Should fire url-value-changed for URI custom event', function() {
-        var spy = sinon.stub();
-        element.addEventListener('url-value-changed', spy);
-
-        var ev = new CustomEvent('uri-parameter-changed', {
-          'detail': {
-            'name': 'env',
-            'value': 'api'
-          },
-          bubbles: true
-        });
-        document.dispatchEvent(ev);
-
-        assert.isTrue(spy.calledOnce, 'Event has been called once');
+      test('Element produces URL with array value', function() {
+        element.set(['_renderQueryParameters', 4, 'value'], ['test']);
+        element._processInput();
+        var match = element.value.match(/&arrayQueryParameter=/g);
+        assert.equal(match.length, 1);
       });
 
-      test('Should fire url-value-changed for query parameter custom event', function() {
-        var spy = sinon.stub();
-        element.addEventListener('url-value-changed', spy);
-
-        var ev = new CustomEvent('query-parameter-changed', {
-          'detail': {
-            'name': 'q',
-            'value': 'test'
-          },
-          bubbles: true
-        });
-        document.dispatchEvent(ev);
-        assert.isTrue(spy.calledOnce, 'Event has been called once');
-      });
-
-      test('Should not apped query parameter if not previously defined', function() {
-        var ev = new CustomEvent('query-parameter-changed', {
-          'detail': {
-            'name': 'test',
-            'value': 'test'
-          },
-          bubbles: true
-        });
-        document.dispatchEvent(ev);
-        assert.lengthOf(element._renderQueryParameters, ramlQueryParameters.length);
+      test('Element produces URL with array values', function() {
+        element.set(['_renderQueryParameters', 4, 'value'], ['test', 'test2']);
+        element._processInput();
+        var match = element.value.match(/&arrayQueryParameter=/g);
+        assert.equal(match.length, 2);
       });
     });
     </script>

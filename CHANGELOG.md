@@ -1,3 +1,18 @@
+<a name="0.1.22"></a>
+## [0.1.22](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.21...v0.1.22) (2017-06-14)
+
+
+### New
+
+* Added support for array query parameters ([bf3f9d2574a3bf5632a30b091b9d33339c818eec](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/bf3f9d2574a3bf5632a30b091b9d33339c818eec))
+* Working on Array query parameters ([1edb7d4bd92ddb71df13ae4ed6eaf5a8fd0f0453](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/1edb7d4bd92ddb71df13ae4ed6eaf5a8fd0f0453))
+
+### Test
+
+* Added test for Array Query parameters ([6efb3a624bf8a139981802250faabd12099bfba5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/6efb3a624bf8a139981802250faabd12099bfba5))
+
+
+
 <a name="0.1.21"></a>
 ## [0.1.21](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.20...v0.1.21) (2017-05-12)
 
