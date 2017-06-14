@@ -57,6 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var apiUrlRaml;
 
       suiteSetup(function(done) {
+        this.timeout(120000);
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
         var parser = fixture('parser');
         var enhancer = fixture('enhancer');
@@ -86,7 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       test('Should compute `_renderQueryParameters`', function() {
         assert.isArray(element._renderQueryParameters, '_renderQueryParameters is computed');
-        assert.lengthOf(element._renderQueryParameters, 4, '_renderQueryParameters has 4 items');
+        assert.lengthOf(element._renderQueryParameters, parsedRaml.length,
+          '_renderQueryParameters has 5 items');
       });
 
       test('Should compute `hasQueryParameters`', function() {
@@ -142,6 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var parsedRaml;
 
       suiteSetup(function(done) {
+        this.timeout(120000);
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
         var parser = fixture('parser');
         var enhancer = fixture('enhancer');
