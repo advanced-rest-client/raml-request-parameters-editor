@@ -242,8 +242,9 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * internal data structure.
        */
       _transformQueryParameters: function(array) {
-        return array.map(function(item) {
-          item = Object.assign({}, item);
+        var items = [];
+        for (var i = 0, len = array.length; i < len; i++) {
+          var item = Object.assign({}, array[i]);
           if (item.type === 'array' && item.required) {
             var example = null;
             if (item.examples) {
@@ -251,11 +252,24 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
             } else if (item.example) {
               example = item.example;
             }
-
+            if (example) {
+              example = this.__parseArrayExample(example);
+              item.examples = undefined;
+              item.example = example;
+              // if (example instanceof Array) {
+              //   for (var j = 0, lenEx = example.length; j < lenEx; j++) {
+              //     var _res = Object.assign({}, item, {
+              //       example: example[j]
+              //     });
+              //     items.push(this._createRenderObject(_res));
+              //   }
+              //   continue;
+              // }
+            }
           }
-          this._createRenderObject(item);
-          return item;
-        }, this);
+          items.push(this._createRenderObject(item));
+        }
+        return items;
       },
       /**
        * Creates a render item (with internal data mode) out of RAML definition.
@@ -285,7 +299,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         }
 
         if (item.required && typeof item.default !== 'undefined' && !item.value) {
-          item.value = item.default;
+          item.value = item.isArray ? this.__parseArrayExample(item.default) :
+            item.default;
         }
         if (typeof item.value === 'undefined' && item.required) {
           if (item.examples) {
@@ -304,7 +319,23 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
         }
 
+        if (item.value && item.isArray && typeof item.value === 'string') {
+          item.value = [item.value];
+        }
+
+        if (item.isArray && !item.value) {
+          item.value = [''];
+        }
         return item;
+      },
+      __parseArrayExample: function(example) {
+        try {
+          var arr = JSON.parse(example);
+          if (arr instanceof Array) {
+            return arr;
+          }
+        } catch (e) {}
+        return example;
       },
       /**
        * Computes rendered item input field type based on RAML definition.
@@ -349,6 +380,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           this._internalValueChange = false;
           return;
         }
+
         var url = this.url;
         if (this.hasUriParameters) {
           url = this._applyUriParams(url);
@@ -395,20 +427,43 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        */
       _applyQueryParams: function(url) {
         var params = this.$.queryParametersForm.serialize();
+        var items = [];
+
         for (var paramName in params) {
           var value = params[paramName];
           if (!value && value !== 0 && value !== null && value !== false) {
-            delete params[paramName];
             continue;
           }
-          value = String(value);
-          if (value.trim() === '') {
-            delete params[paramName];
-            continue;
+          var isArray = false;
+          if (value instanceof Array) {
+            isArray = true;
+            if (!value.length || (value.length === 1 && !value[0])) {
+              continue;
+            }
+          } else {
+            value = String(value);
+            if (value.trim() === '') {
+              delete params[paramName];
+              continue;
+            }
           }
-          params[paramName] = value;
+          if (isArray) {
+            for (var i = 0, len = value.length; i < len; i++) {
+              if (value || value === 0 || value === false) {
+                items.push({
+                  name: paramName,
+                  value: value[i]
+                });
+              }
+            }
+          } else {
+            items.push({
+              name: paramName,
+              value: value
+            });
+          }
         }
-        params = this._wwwFormUrlEncode(params);
+        params = this._wwwFormUrlEncode(items);
         if (!params) {
           return url;
         }
@@ -420,18 +475,19 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         return url;
       },
       /**
-       * @param {Object} object The object to encode as x-www-form-urlencoded.
+       * @param {Array} object The list of objects to encode as
+       * x-www-form-urlencoded string. Each entry should have `name` and `value`
+       * properties.
        * @return {string} .
        */
       _wwwFormUrlEncode: function(object) {
-        if (!object) {
+        if (!object || !object.length) {
           return '';
         }
-        var pieces = [];
-        Object.keys(object).forEach(function(key) {
-          pieces.push(
-            this._wwwFormUrlEncodePiece(key) + '=' +
-            this._wwwFormUrlEncodePiece(object[key]));
+
+        var pieces = object.map(function(item) {
+          return this._wwwFormUrlEncodePiece(item.name) + '=' +
+            this._wwwFormUrlEncodePiece(item.value);
         }, this);
         return pieces.join('&');
       },
@@ -481,7 +537,15 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           var params = {};
           matches.forEach(function(item) {
             var parts = item.split('=');
-            params[parts[0]] = parts[1];
+            var name = parts[0];
+            if (name in params) {
+              if (!(params[name] instanceof Array)) {
+                params[name] = [params[name]];
+              }
+              params[name].push(parts[1]);
+            } else {
+              params[name] = parts[1];
+            }
           });
           this._applyQueryParamsValues(params);
         }
