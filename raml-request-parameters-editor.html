@@ -288,6 +288,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           item.inputLabel += '*';
         }
         item.inputType = this._computeItemInputType(item);
+        item.isBoolean = item.inputType === 'boolean';
+        if (!item.pattent) {
+          if (item.inputType === 'date') {
+            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2';
+          } else if (item.inputType === 'datetime-local') {
+            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2';
+          }
+        }
 
         if (item.examples && item.examples.length && item.examples[0]) {
           item.inputPlaceholder = 'Example: ' + item.examples[0];
@@ -326,6 +334,10 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (item.isArray && !item.value) {
           item.value = [''];
         }
+
+        if (item.isBoolean && typeof item.value === 'boolean') {
+          item.value = String(item.value);
+        }
         return item;
       },
       __parseArrayExample: function(example) {
@@ -358,6 +370,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       __computeInputType: function(type) {
         if (type && NUMBER_INPUT_TYPES.indexOf(type) !== -1) {
           return 'number';
+        } else if (type === 'boolean') {
+          return 'boolean';
+        } else if (type === 'date-only') {
+          return 'date';
+        } /*else if (type === 'tmime-only') {
+          return 'time';
+        }*/ else if (type === 'datetime-only') {
+          return 'datetime-local';
         }
         return 'text';
       },
