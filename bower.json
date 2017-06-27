@@ -20,7 +20,7 @@
     "url": "git@github.com:advanced-rest-client/raml-request-parameters-editor.git"
   },
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0",
+    "polymer": "Polymer/polymer#^1.9.2",
     "iron-form": "PolymerElements/iron-form#^1.1.4",
     "paper-input": "PolymerElements/paper-input#^1.1.22",
     "paper-styles": "PolymerElements/paper-styles#^1.1.5",
@@ -43,15 +43,16 @@
   },
   "devDependencies": {
     "iron-component-page": "polymerelements/iron-component-page#1.0.0",
-    "web-component-tester": "^4.0.0",
+    "web-component-tester": "^6.0.0",
     "paper-styles": "polymerelements/paper-styles#^1.0.2",
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
-    "iron-test-helpers": "PolymerElements/iron-test-helpers#^1.0.0",
-    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#^1.4.0",
+    "test-fixture": "PolymerElements/test-fixture#^3.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "arc-demo-helpers": "advanced-rest-client/arc-demo-helpers#^1.0.9",
     "raml-js-parser": "advanced-rest-client/raml-js-parser#^2.0.0",
-    "raml-json-enhance": "advanced-rest-client/raml-json-enhance#^0.1.7"
+    "raml-json-enhance": "advanced-rest-client/raml-json-enhance#^0.1.7",
+    "raml-request-url-editor": "advanced-rest-client/raml-request-url-editor#^0.1.15"
   },
   "ignore": [
     "**/.*",
