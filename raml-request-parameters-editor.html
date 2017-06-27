@@ -291,9 +291,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         item.isBoolean = item.inputType === 'boolean';
         if (!item.pattent) {
           if (item.inputType === 'date') {
-            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2';
-          } else if (item.inputType === 'datetime-local') {
-            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2';
+            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
           }
         }
 
@@ -374,10 +372,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           return 'boolean';
         } else if (type === 'date-only') {
           return 'date';
-        } /*else if (type === 'tmime-only') {
-          return 'time';
-        }*/ else if (type === 'datetime-only') {
-          return 'datetime-local';
         }
         return 'text';
       },
