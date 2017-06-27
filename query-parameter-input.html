@@ -85,6 +85,15 @@ with ability to add / remove controls.
       </paper-dropdown-menu>
     </template>
 
+    <template is="dom-if" if="[[isBoolean]]">
+      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]">
+        <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
+          <paper-item data-value="true">True</paper-item>
+          <paper-item data-value="false">False</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </template>
+
     <template is="dom-if" if="[[isInput]]">
       <paper-input
         label="[[model.inputLabel]]"
@@ -152,6 +161,8 @@ with ability to add / remove controls.
         type: Boolean,
         reflectToAttribute: true
       },
+      // Computed value, True if current item is a boolean value
+      isBoolean: Boolean,
       arrayValue: {
         type: Array,
         value: function() {
@@ -168,6 +179,7 @@ with ability to add / remove controls.
       this.isEnum = undefined;
       this.isInput = undefined;
       this.isArray = undefined;
+      this.isBoolean = undefined;
     },
     // Sets the template depending on model configuration
     _modelChanged: function(model) {
@@ -181,6 +193,11 @@ with ability to add / remove controls.
       }
       if (model.isArray) {
         this.isArray = true;
+        return;
+      }
+
+      if (model.isBoolean) {
+        this.isBoolean = true;
         return;
       }
       this.isInput = true;
