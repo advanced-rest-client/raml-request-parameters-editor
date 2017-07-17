@@ -251,13 +251,13 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (!array || !array.length) {
           return [];
         }
-        return this._transformQueryParameters(array);
+        return this._transformModelParameters(array);
       },
       /**
        * Transforms query/uri parameters (RAML type) into internal data model
        * used by the form element.
        */
-      _transformQueryParameters: function(array) {
+      _transformModelParameters: function(array) {
         var items = [];
 
         for (var i = 0, len = array.length; i < len; i++) {
