@@ -1,3 +1,96 @@
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.1...v0.2.2) (2017-07-17)
+
+
+
+
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.23...v0.2.1) (2017-07-17)
+
+
+
+
+<a name="0.1.23"></a>
+## [0.1.23](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.22...v0.1.23) (2017-06-14)
+
+
+
+
+<a name="0.1.22"></a>
+## [0.1.22](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.21...v0.1.22) (2017-06-14)
+
+
+### New
+
+* Added support for array query parameters ([bf3f9d2574a3bf5632a30b091b9d33339c818eec](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/bf3f9d2574a3bf5632a30b091b9d33339c818eec))
+* Working on Array query parameters ([1edb7d4bd92ddb71df13ae4ed6eaf5a8fd0f0453](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/1edb7d4bd92ddb71df13ae4ed6eaf5a8fd0f0453))
+
+### Test
+
+* Added test for Array Query parameters ([6efb3a624bf8a139981802250faabd12099bfba5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/6efb3a624bf8a139981802250faabd12099bfba5))
+
+
+
+<a name="0.1.21"></a>
+## [0.1.21](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.20...v0.1.21) (2017-05-12)
+
+
+
+
+<a name="0.1.20"></a>
+## [0.1.20](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.19...v0.1.20) (2017-05-12)
+
+
+### Fix
+
+* Fixed issue when the help wasn't opening because of error ([d3cf5e9179365f44e6a80a56abdbf6e34e31f490](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/d3cf5e9179365f44e6a80a56abdbf6e34e31f490))
+
+
+
+<a name="0.1.19"></a>
+## [0.1.19](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.18...v0.1.19) (2017-04-27)
+
+
+
+
+<a name="0.1.18"></a>
+## [0.1.18](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.17...v0.1.18) (2017-04-27)
+
+
+
+
+<a name="0.1.17"></a>
+## [0.1.17](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.16...v0.1.17) (2017-04-27)
+
+
+
+
+<a name="0.1.16"></a>
+## [0.1.16](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.15...v0.1.16) (2017-04-27)
+
+
+### Update
+
+* Added support for custom event driven communication when setting an URL value ([1b65f4a275925d7064c0e2c2120c307ef603512d](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/1b65f4a275925d7064c0e2c2120c307ef603512d))
+* Added tests for new logic ([85db171f7130c999e9bc947bbc206ea08c4781c8](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/85db171f7130c999e9bc947bbc206ea08c4781c8))
+* Removed _eventTarget property and the element will listen for events on the window object ([ed000503f6be42d2ed704d403ee014f35b0ba122](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/ed000503f6be42d2ed704d403ee014f35b0ba122))
+* Removed adding a new parameter if previously hasn't existed in the form ([e9fc1283499dd66b9754bb270860b80b98c74a16](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/e9fc1283499dd66b9754bb270860b80b98c74a16))
+* Updated mixin name to match ARC styling maixins ([af94fe5a2036d3cd9e6b4d54cd60c9d3c68daff5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/af94fe5a2036d3cd9e6b4d54cd60c9d3c68daff5))
+
+
+
+<a name="0.1.15"></a>
+## [0.1.15](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.14...v0.1.15) (2017-04-27)
+
+
+### Update
+
+* Minor performance improvements ([edab4a4148497deda421362855e752b7135dada9](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/edab4a4148497deda421362855e752b7135dada9))
+* Now produced URL will not contain parameters that doesn't have value ([58bc47d3cceaf99d9c28df667a32c1b94c49a29a](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/58bc47d3cceaf99d9c28df667a32c1b94c49a29a))
+* Replace lit command for Travis with package lint command ([0fbce48d7a52887a3d39f2584e97b76ef7ee1e46](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/0fbce48d7a52887a3d39f2584e97b76ef7ee1e46))
+
+
+
 <a name="0.1.14"></a>
 ## [0.1.14](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.1.13...v0.1.14) (2017-04-12)
 
