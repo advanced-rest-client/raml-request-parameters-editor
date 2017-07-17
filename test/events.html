@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         done();
       });
 
-      test('Should update query parameter from custom event', function() {
+      test('Updates query parameter from custom event', function() {
         var ev = new CustomEvent('query-parameter-changed', {
           'detail': {
             'name': 'q',
@@ -91,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           bubbles: true
         });
         document.dispatchEvent(ev);
-        assert.equal(element._renderQueryParameters[0].value, 'test');
+        assert.equal(element.queryModel[0].value, 'test');
       });
 
       test('Should update uri parameter from custom event', function() {
@@ -103,7 +103,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           bubbles: true
         });
         document.dispatchEvent(ev);
-        assert.equal(element._renderUriParameters[0].value, 'api');
+        assert.equal(element.uriModel[0].value, 'api');
       });
 
       test('Should fire url-value-changed for URI custom event', function() {
@@ -146,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           bubbles: true
         });
         document.dispatchEvent(ev);
-        assert.lengthOf(element._renderQueryParameters, ramlQueryParameters.length);
+        assert.lengthOf(element.queryModel, ramlQueryParameters.length);
       });
     });
     </script>
