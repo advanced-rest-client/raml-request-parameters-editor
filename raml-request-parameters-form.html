@@ -124,7 +124,7 @@ Custom property | Description | Default
     }
     </style>
     <form is="iron-form" id="form">
-      <template is="dom-repeat" items="{{parameters}}" items-repeater>
+      <template is="dom-repeat" items="{{model}}" items-repeater>
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
             <query-parameter-input model="[[item]]" name="[[item.key]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
@@ -154,7 +154,7 @@ Custom property | Description | Default
 
     properties: {
       // A list of parameters to display. It may be URI or query parameters array.
-      parameters: Array,
+      model: Array,
       /**
        * Set to true to show optional parameters.
        */
