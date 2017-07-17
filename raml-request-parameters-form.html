@@ -18,7 +18,7 @@ the License.
 <link rel="import" href="../markdown-styles/markdown-styles.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../arc-icons/arc-icons.html">
+<link rel="import" href="../anypoint-icons/anypoint-icons.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../paper-tooltip/paper-tooltip.html">
 <link rel="import" href="query-parameter-input.html">
@@ -130,7 +130,7 @@ Custom property | Description | Default
           <div class="value-input">
             <query-parameter-input model="[[item]]" name="[[item.key]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
             <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
+              <paper-icon-button class="help-icon" suffix icon="anypoint:question" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
               <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
             </span>
           </div>

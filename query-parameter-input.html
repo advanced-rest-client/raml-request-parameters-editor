@@ -13,10 +13,11 @@ the License.
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
-<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../anypoint-text-field/anypoint-text-field.html">
+<link rel="import" href="../anypoint-styles/dropdown-menu.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
-<link rel="import" href="../arc-icons/arc-icons.html">
+<link rel="import" href="../anypoint-icons/anypoint-icons.html">
 <link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-item/paper-item.html">
@@ -33,38 +34,50 @@ with ability to add / remove controls.
 -->
 <dom-module id="query-parameter-input">
   <template strip-whitespace>
-    <style>
-    :host([required]) paper-input {
-      --paper-input-container-label: {
+    <style include="anypoint-dropdown-menu-styles">
+    :host {
+      @apply --layout-vertical;
+      @apply --layout-flex;
+      @apply --query-parameter-input;
+    }
+
+    :host([required]) anypoint-text-field {
+      --anypoint-text-field-container-label: {
         color: var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72));
       }
     }
 
     :host([is-array]) {
       padding-left: 8px;
-      border-left: 1px rgba(0, 0, 0, 0.14) solid;
+      border-left: 1px var(--query-parameter-input-array-border-left-color, rgba(0, 0, 0, 0.14)) solid;
     }
 
-    .help-icon {
+    .delete-icon,
+    .array-add-icon {
       color: var(--accent-color, rgba(0, 0, 0, 0.74));
       transition: opacity 0.2s ease-in-out;
       opacity: 0.54;
+      @apply --query-parameter-input-icons;
     }
 
-    .help-icon:hover {
+    .delete-icon:hover,
+    .array-add-icon:hover {
       opacity: 0.74;
+      @apply --query-parameter-input-icons-hover;
     }
 
     .array-item {
       @apply(--layout-horizontal);
+      @apply(--layout-center);
     }
 
-    .array-item paper-input{
+    .array-item anypoint-text-field,
+    paper-dropdown-menu {
       @apply(--layout-flex);
     }
 
     paper-dropdown-menu {
-      width: 100%;
+      margin-right: 8px;
     }
 
     paper-button iron-icon {
@@ -72,11 +85,11 @@ with ability to add / remove controls.
     }
 
     label {
-      @apply(--paper-font-caption);
+      @apply(--anypoint-font-body);
     }
     </style>
     <template is="dom-if" if="[[isEnum]]">
-      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]">
+      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]" class="anypoint-dropdown-menu">
         <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
           <template is="dom-repeat" items="[[model.enum]]">
             <paper-item data-value$="[[item]]">[[item]]</paper-item>
@@ -86,7 +99,7 @@ with ability to add / remove controls.
     </template>
 
     <template is="dom-if" if="[[isBoolean]]">
-      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]">
+      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]" class="anypoint-dropdown-menu">
         <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
           <paper-item data-value="true">True</paper-item>
           <paper-item data-value="false">False</paper-item>
@@ -95,7 +108,7 @@ with ability to add / remove controls.
     </template>
 
     <template is="dom-if" if="[[isInput]]">
-      <paper-input
+      <anypoint-text-field
         label="[[model.inputLabel]]"
         value="{{value}}"
         required="[[model.required]]"
@@ -108,14 +121,14 @@ with ability to add / remove controls.
         maxlength="[[model.maxLength]]"
         minlength="[[model.minLength]]"
         always-float-label="[[model.inputFloatLabel]]"
-        placeholder="[[model.inputPlaceholder]]"></paper-input>
+        placeholder="[[model.inputPlaceholder]]"></anypoint-text-field>
     </template>
 
     <template is="dom-if" if="[[isArray]]">
       <label>[[model.inputLabel]]</label>
       <template is="dom-repeat" items="[[arrayValue]]">
         <div class="array-item">
-          <paper-input
+          <anypoint-text-field
             label="Parameter value"
             value="{{item.value}}"
             required="[[model.required]]"
@@ -129,17 +142,17 @@ with ability to add / remove controls.
             minlength="[[model.minLength]]"
             no-label-float
             on-input="_arrayValueChanged">
-          </paper-input>
+          </anypoint-text-field>
           <template is="dom-if" if="[[index]]">
             <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:remove-circle-outline" on-tap="_removeArrayValue"></paper-icon-button>
+              <paper-icon-button class="delete-icon" suffix icon="anypoint:circle-minus" on-tap="_removeArrayValue"></paper-icon-button>
               <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Remove array value</paper-tooltip>
             </span>
           </template>
         </div>
       </template>
       <div class="add-action">
-        <paper-button on-tap="_addArrayValue"><iron-icon class="help-icon" icon="arc:add-circle-outline"></iron-icon>Add array value</paper-button>
+        <paper-button on-tap="_addArrayValue"><iron-icon class="array-add-icon" icon="anypoint:circle-plus"></iron-icon>Add array value</paper-button>
       </div>
     </template>
   </template>
