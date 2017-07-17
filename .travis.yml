@@ -14,6 +14,8 @@ branches:
   only:
   - stage
   - develop
+  - anypoint
+  - anypoint-stage
 after_success:
 - node tasks/ci.js
 env:
