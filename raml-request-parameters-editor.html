@@ -73,7 +73,6 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
 -->
 <dom-module id="raml-request-parameters-editor">
   <template strip-whitespace>
-    <style include="markdown-styles"></style>
     <style>
      :host {
       display: block;
@@ -109,17 +108,21 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <section hidden$="[[hasParameters]]" class="empty-message">
       <p>This API doesn't require to declare query or URI parameters.</p>
     </section>
-    <section hidden$="[[!hasUriParameters]]">
-      <h3>URI parameters</h3>
-      <raml-request-parameters-form id="uriParametersForm" form-type="uri" parameters="{{_renderUriParameters}}"></raml-request-parameters-form>
-    </section>
-    <section hidden$="[[!hasQueryParameters]]">
-      <div class="params-title">
-        <h3>Query parameters</h3>
-        <paper-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</paper-checkbox>
-      </div>
-      <raml-request-parameters-form id="queryParametersForm" form-type="query" optional-opened="[[optionalQueryParamsOpened]]" parameters="{{_renderQueryParameters}}"></raml-request-parameters-form>
-    </section>
+    <template is="dom-if" if="[[hasUriParameters]]">
+      <section>
+        <h3>URI parameters</h3>
+        <raml-request-parameters-form id="uriParametersForm" form-type="uri" model="{{uriModel}}"></raml-request-parameters-form>
+      </section>
+    </template>
+    <template is="dom-if" if="[[hasQueryParameters]]">
+      <section>
+        <div class="params-title">
+          <h3>Query parameters</h3>
+          <paper-checkbox hidden$="[[!hasOptionalQueryParameters]]" checked="{{optionalQueryParamsOpened}}">Show optional parameters</paper-checkbox>
+        </div>
+        <raml-request-parameters-form id="queryParametersForm" form-type="query" optional-opened="[[optionalQueryParamsOpened]]" model="{{queryModel}}"></raml-request-parameters-form>
+      </section>
+    </template>
   </template>
   <script>
   (function() {
@@ -144,15 +147,17 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
          * It will have additional propery `value` without affecting original array
          * (changes to the `queryParameters` list are propagated outside this element).
          */
-        _renderQueryParameters: {
+        queryModel: {
           type: Array,
-          computed: '_computeParameters(queryParameters.*)'
+          value: function() {
+            return [];
+          },
+          computed: '_computeModel(queryParameters.*)'
         },
         // Computed value if the `queryParameters` are set.
         hasQueryParameters: {
           type: Boolean,
-          value: false,
-          computed: '_computeHasParameters(_renderQueryParameters)'
+          computed: '_computeHasParameters(queryModel)'
         },
         // List of all URI parameters that can be applied to selected method.
         uriParameters: Array,
@@ -161,15 +166,17 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
          * It will have additional propery `value` without affecting original array
          * (changes to the `uriParameters` list are propagated outside this element).
          */
-        _renderUriParameters: {
+        uriModel: {
           type: Array,
-          computed: '_computeParameters(uriParameters.*)'
+          value: function() {
+            return [];
+          },
+          computed: '_computeModel(uriParameters.*)'
         },
         // Computed value if the `uriParameters` are set.
         hasUriParameters: {
           type: Boolean,
-          value: false,
-          computed: '_computeHasParameters(uriParameters)'
+          computed: '_computeHasParameters(uriModel)'
         },
         // Computed value, true if has query or URI parameters.
         hasParameters: {
@@ -206,7 +213,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         hasOptionalQueryParameters: {
           type: Boolean,
           value: false,
-          computed: '_computeHasOptionalParameters(_renderQueryParameters.*)',
+          computed: '_computeHasOptionalParameters(queryModel.*)',
           notify: true
         },
         // If true the optional query parameters will be displayed in the table.
@@ -214,7 +221,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       },
 
       observers: [
-        '_valueChanged(value)'
+        '_valueChanged(value)',
+        '_computeModelValue(queryModel, uriModel)'
       ],
 
       attached: function() {
@@ -229,20 +237,29 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         this.unlisten(window, 'uri-parameter-changed', '_uriParameterChangedHandler');
       },
 
-      // Computes a copy of input parameters array
-      _computeParameters: function(record) {
+      /**
+       * Computes a model of for the form element from RAML types definition.
+       *
+       * It creates a copy of each item so any properties added to the
+       * URI/Query parameters in this element won't be propagated outside the
+       * element.
+       *
+       * @return {Array} Model for the form editor.
+       */
+      _computeModel: function(record) {
         var array = record.base;
         if (!array || !array.length) {
           return [];
         }
-        return this._transformQueryParameters(array);
+        return this._transformModelParameters(array);
       },
       /**
-       * Transforms query parameters that are received from the RAML parser into
-       * internal data structure.
+       * Transforms query/uri parameters (RAML type) into internal data model
+       * used by the form element.
        */
-      _transformQueryParameters: function(array) {
+      _transformModelParameters: function(array) {
         var items = [];
+
         for (var i = 0, len = array.length; i < len; i++) {
           var item = Object.assign({}, array[i]);
           if (item.type === 'array' && item.required) {
@@ -256,30 +273,20 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
               example = this.__parseArrayExample(example);
               item.examples = undefined;
               item.example = example;
-              // if (example instanceof Array) {
-              //   for (var j = 0, lenEx = example.length; j < lenEx; j++) {
-              //     var _res = Object.assign({}, item, {
-              //       example: example[j]
-              //     });
-              //     items.push(this._createRenderObject(_res));
-              //   }
-              //   continue;
-              // }
             }
           }
-          items.push(this._createRenderObject(item));
+          items.push(this._createModelItem(item));
         }
         return items;
       },
       /**
-       * Creates a render item (with internal data mode) out of RAML definition.
+       * Creates a model item to be rendered in the form editor.
        *
-       * In complex objects value of properties are passed by reference so the function do not return
-       * the same object.
-       *
-       * @param {Object} item A query or URL parameter value as an output of the RAML parser.
+       * @param {Object} item A RAML's type definition
+       * @return {Object} The same RAML type as in the argument byt with
+       * computed model properties.
        */
-      _createRenderObject: function(item) {
+      _createModelItem: function(item) {
         item.isEnum = !!(item.enum && item.enum.length);
         item.isArray = item.type === 'array';
         item.hasDescription = !!item.description;
@@ -287,8 +294,17 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (item.required) {
           item.inputLabel += '*';
         }
+        // Defines value input type
         item.inputType = this._computeItemInputType(item);
-
+        // If true then it renders dropdown
+        item.isBoolean = item.inputType === 'boolean';
+        if (!item.pattent) {
+          if (item.inputType === 'date') {
+            item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
+          }
+        }
+        // Unifies examples. This is done by the enhancer but I am keep it
+        // here so not enhanced input should be computed as well.
         if (item.examples && item.examples.length && item.examples[0]) {
           item.inputPlaceholder = 'Example: ' + item.examples[0];
         } else if (item.example && typeof item.example === 'string') {
@@ -296,8 +312,11 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         }
         if (item.inputPlaceholder) {
           item.inputFloatLabel = true;
+        } else {
+          item.inputFloatLabel = false;
         }
-
+        // Below sets a value of the item if it's required and any sample value
+        // can be set (from default, examples, enums)
         if (item.required && typeof item.default !== 'undefined' && !item.value) {
           item.value = item.isArray ? this.__parseArrayExample(item.default) :
             item.default;
@@ -315,19 +334,34 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
             item.value = item.enum[0];
           }
         }
+        // Just in case if the example / default value was encoded.
         if (item.value && typeof item.value === 'string') {
           item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
         }
-
+        // Normalizes value.
         if (item.value && item.isArray && typeof item.value === 'string') {
           item.value = [item.value];
         }
-
         if (item.isArray && !item.value) {
           item.value = [''];
         }
+        // In the end it's always string...
+        if (item.isBoolean && typeof item.value === 'boolean') {
+          item.value = String(item.value);
+        }
         return item;
       },
+      /**
+       * Tries to JSON parse an examples value of the array type item and
+       * returns the value as an array (if parsed with success) or the input
+       * string if it couldn't be parsed.
+       *
+       * This function is intended to be used if the model item is an array.
+       *
+       * @param {String} example A value of the example property to be parsed.
+       * @return {Array|String} Array if parsed or string if there was a parse
+       * error.
+       */
       __parseArrayExample: function(example) {
         try {
           var arr = JSON.parse(example);
@@ -354,10 +388,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         }
         return this.__computeInputType(item.type);
       },
-
+      // Returns input type based on the RAML type name.
       __computeInputType: function(type) {
         if (type && NUMBER_INPUT_TYPES.indexOf(type) !== -1) {
           return 'number';
+        } else if (type === 'boolean') {
+          return 'boolean';
+        } else if (type === 'date-only') {
+          return 'date';
         }
         return 'text';
       },
@@ -388,10 +426,29 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (this.hasQueryParameters) {
           url = this._applyQueryParams(url);
         }
-
         this._internalValueChange = true;
         this.set('value', url);
         this._internalValueChange = false;
+      },
+      /**
+       * Creates a map of serialized values from a model.
+       * It is a replacemenet for `iron-form` serialize function which
+       * can't be used here because this function is called before local DOM
+       * is ready and therefore form is not set.
+       *
+       * @param {String} target Target model name. Either `uri` or `query`.
+       * @return {Object} Map of serialized values.
+       */
+      _formValuesFromModel: function(target) {
+        var model = this[target + 'Model'];
+        var result = {};
+        if (!model || !model.length) {
+          return result;
+        }
+        model.forEach(function(item) {
+          result[item.key] = item.value;
+        });
+        return result;
       },
       /**
        * Applies URI parameters to the URL.
@@ -400,7 +457,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * @return {String} The URL.
        */
       _applyUriParams: function(url) {
-        var uriParams = this.$.uriParametersForm.serialize();
+        var uriParams = this._formValuesFromModel('uri');
         for (var paramName in uriParams) {
           var value = uriParams[paramName];
           if (!value) {
@@ -426,7 +483,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * @return {String} The URL.
        */
       _applyQueryParams: function(url) {
-        var params = this.$.queryParametersForm.serialize();
+        var params = this._formValuesFromModel('query');
         var items = [];
 
         for (var paramName in params) {
@@ -600,13 +657,13 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * @param {Array<String>} names List of variables names (uri parameters).
        */
       _applyUriValues: function(values, names) {
-        var up = this._renderUriParameters;
+        var up = this.uriModel;
         var len = up.length;
         this._internalValueChange = true;
         names.forEach(function(item, index) {
           for (var i = 0; i < len; i++) {
             if (up[i].name === item) {
-              this.set(['_renderUriParameters', i, 'value'], values[index]);
+              this.set(['uriModel', i, 'value'], values[index]);
               break;
             }
           }
@@ -620,13 +677,13 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * list
        */
       _applyQueryParamsValues: function(map) {
-        var qp = this._renderQueryParameters;
+        var qp = this.queryModel;
         var len = qp.length;
         this._internalValueChange = true;
         for (var _key in map) {
           for (var i = 0; i < len; i++) {
             if (qp[i].name === _key) {
-              this.set(['_renderQueryParameters', i, 'value'], map[_key]);
+              this.set(['queryModel', i, 'value'], map[_key]);
               break;
             }
           }
@@ -651,10 +708,10 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         var validUri = true;
         var validUrl = true;
         if (this.hasUriParameters) {
-          validUri = this.$.uriParametersForm.validate();
+          validUri = this.$$('#uriParametersForm').validate();
         }
         if (this.hasQueryParameters) {
-          validUrl = this.$.queryParametersForm.validate();
+          validUrl = this.$$('#queryParametersForm').validate();
         }
 
         return validUri && validUrl;
@@ -685,7 +742,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           this._processInput();
           return;
         }
-        this._updateEventValue('_renderQueryParameters', e);
+        this._updateEventValue('queryModel', e);
       },
       /**
        * Handler for the `uri-parameter-changed` event.
@@ -696,7 +753,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           this._processInput();
           return;
         }
-        this._updateEventValue('_renderUriParameters', e);
+        this._updateEventValue('uriModel', e);
       },
       // Checks if the event comes from any of the children.
       _isChildEvent: function(e) {
@@ -711,8 +768,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       },
 
       /**
-       * Update array value for given type (`_renderQueryParameters` or
-       * `_renderUriParameters`) for given event.
+       * Update array value for given type (`queryModel` or
+       * `uriModel`) for given event.
        */
       _updateEventValue: function(target, e) {
         if (e.target === this) {
@@ -740,6 +797,24 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
             return;
           }
         }
+      },
+      /**
+       * This function is called only when models for URI and query parameters
+       * are set but not when property of a model change. This will happend
+       * if either `queryParameters` or `uriParameters` change and model
+       * will be re-generated.
+       *
+       * Because models have default value (empty arrays) it always going to be
+       * called when element is created.
+       *
+       * When model has been regenerated (and this function called) it updates
+       * the `value` property.
+       */
+      _computeModelValue: function(queryModel, uriModel) {
+        if (!(queryModel && queryModel.length) && !(uriModel && uriModel.length)) {
+          return;
+        }
+        this._processInput();
       }
     });
   })();
