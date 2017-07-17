@@ -63,11 +63,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h1>The raml-request-parameters-editor element</h1>
       <div main>
         <template is="dom-if" if="[[isMethod]]" restamp="true">
-          <raml-request-parameters-editor
-            query-parameters="[[selected.queryParameters]]"
-            uri-parameters="[[selected.allUriParameters]]"
-            url="[[selected.absoluteUri]]"
-            value="{{url}}"></raml-request-parameters-editor>
+          <raml-request-parameters-editor query-parameters="[[selected.queryParameters]]" uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}"></raml-request-parameters-editor>
             <div class="url-value">
               <p>Produced URL value is:</p>
               <raml-request-url-editor auto-validate required uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}" ></raml-request-url-editor>
