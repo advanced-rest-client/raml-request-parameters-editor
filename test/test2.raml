@@ -1,0 +1,35 @@
+#%RAML 1.0
+title: Programming Language Populariy
+version: 1
+baseUri: http://example.com
+types:
+  language:
+    type: string
+    description: A programming language name
+    enum: [Ruby, Python, JavaScript]
+  country:
+    type: string
+    description: A country name
+    examples:
+      oneword: Canada
+      acronym: USA
+      withspace: United Kingdom
+/popularity/{lang}/{place}/{year}:
+  description: Yearly populaity of a language in a geographical region
+  uriParameters:
+    lang:
+      type: language
+    place:
+      type: country
+    year:
+      type: number
+      description: Year
+      examples:
+        earliest: 2000
+        latest: 2015
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: {"lang": "Ruby", "place": "USA", "popularity": "High"}

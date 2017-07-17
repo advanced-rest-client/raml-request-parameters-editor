@@ -124,10 +124,10 @@ Custom property | Description | Default
     }
     </style>
     <form is="iron-form" id="form">
-      <template is="dom-repeat" items="{{parameters}}" items-repeater>
+      <template is="dom-repeat" items="{{model}}" items-repeater>
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
-            <query-parameter-input model="[[item]]" name="[[item.name]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
+            <query-parameter-input model="[[item]]" name="[[item.key]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
             <span>
               <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
               <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
@@ -154,7 +154,7 @@ Custom property | Description | Default
 
     properties: {
       // A list of parameters to display. It may be URI or query parameters array.
-      parameters: Array,
+      model: Array,
       /**
        * Set to true to show optional parameters.
        */
@@ -223,7 +223,7 @@ Custom property | Description | Default
       var item = e.model.get('item');
       var name = item.name || item.key;
       var value = item.value;
-      
+
       this.fire(formType + '-parameter-changed', {
         name: name,
         value: value

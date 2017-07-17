@@ -80,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.uriParameters = ramlUriParameters;
         element.url = apiUrlRaml;
         TestHelpers.forceXIfStamp(element);
-        parameter = element._renderQueryParameters[4];
+        parameter = element.queryModel[4];
       });
 
       test('Rendered query parameter should have array value', function() {
@@ -92,14 +92,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
       test('Element produces URL with array value', function() {
-        element.set(['_renderQueryParameters', 4, 'value'], ['test']);
+        element.set(['queryModel', 4, 'value'], ['test']);
         element._processInput();
         var match = element.value.match(/&arrayQueryParameter=/g);
         assert.equal(match.length, 1);
       });
 
       test('Element produces URL with array values', function() {
-        element.set(['_renderQueryParameters', 4, 'value'], ['test', 'test2']);
+        element.set(['queryModel', 4, 'value'], ['test', 'test2']);
         element._processInput();
         var match = element.value.match(/&arrayQueryParameter=/g);
         assert.equal(match.length, 2);

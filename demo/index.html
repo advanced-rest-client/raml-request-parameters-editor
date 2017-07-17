@@ -21,6 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../font-roboto/roboto.html">
   <link rel="import" href="../../arc-demo-helpers/raml-demo-page.html">
   <link rel="import" href="../../paper-input/paper-input.html">
+  <link rel="import" href="../../raml-request-url-editor/raml-request-url-editor.html">
   <link rel="import" href="../raml-request-parameters-editor.html">
 
   <style is="custom-style">
@@ -62,14 +63,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <h1>The raml-request-parameters-editor element</h1>
       <div main>
         <template is="dom-if" if="[[isMethod]]" restamp="true">
-          <raml-request-parameters-editor
-            query-parameters="[[selected.queryParameters]]"
-            uri-parameters="[[selected.allUriParameters]]"
-            url="[[selected.absoluteUri]]"
-            value="{{url}}"></raml-request-parameters-editor>
+          <raml-request-parameters-editor query-parameters="[[selected.queryParameters]]" uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}"></raml-request-parameters-editor>
             <div class="url-value">
               <p>Produced URL value is:</p>
-              <paper-input value="{{url}}" label="Request URL"></paper-input>
+              <raml-request-url-editor auto-validate required uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}" ></raml-request-url-editor>
             </div>
         </template>
         <p hidden$="[[isMethod]]">Select a method</p>
