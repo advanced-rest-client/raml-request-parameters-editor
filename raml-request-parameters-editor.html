@@ -221,7 +221,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
       },
 
       observers: [
-        '_valueChanged(value)'
+        '_valueChanged(value)',
+        '_computeModelValue(queryModel, uriModel)'
       ],
 
       attached: function() {
@@ -425,10 +426,29 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (this.hasQueryParameters) {
           url = this._applyQueryParams(url);
         }
-
         this._internalValueChange = true;
         this.set('value', url);
         this._internalValueChange = false;
+      },
+      /**
+       * Creates a map of serialized values from a model.
+       * It is a replacemenet for `iron-form` serialize function which
+       * can't be used here because this function is called before local DOM
+       * is ready and therefore form is not set.
+       *
+       * @param {String} target Target model name. Either `uri` or `query`.
+       * @return {Object} Map of serialized values.
+       */
+      _formValuesFromModel: function(target) {
+        var model = this[target + 'Model'];
+        var result = {};
+        if (!model || !model.length) {
+          return result;
+        }
+        model.forEach(function(item) {
+          result[item.key] = item.value;
+        });
+        return result;
       },
       /**
        * Applies URI parameters to the URL.
@@ -437,7 +457,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * @return {String} The URL.
        */
       _applyUriParams: function(url) {
-        var uriParams = this.$.uriParametersForm.serialize();
+        var uriParams = this._formValuesFromModel('uri');
         for (var paramName in uriParams) {
           var value = uriParams[paramName];
           if (!value) {
@@ -463,7 +483,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
        * @return {String} The URL.
        */
       _applyQueryParams: function(url) {
-        var params = this.$.queryParametersForm.serialize();
+        var params = this._formValuesFromModel('query');
         var items = [];
 
         for (var paramName in params) {
@@ -777,6 +797,24 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
             return;
           }
         }
+      },
+      /**
+       * This function is called only when models for URI and query parameters
+       * are set but not when property of a model change. This will happend
+       * if either `queryParameters` or `uriParameters` change and model
+       * will be re-generated.
+       *
+       * Because models have default value (empty arrays) it always going to be
+       * called when element is created.
+       *
+       * When model has been regenerated (and this function called) it updates
+       * the `value` property.
+       */
+      _computeModelValue: function(queryModel, uriModel) {
+        if (!(queryModel && queryModel.length) && !(uriModel && uriModel.length)) {
+          return;
+        }
+        this._processInput();
       }
     });
   })();
