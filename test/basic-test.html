@@ -57,6 +57,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var apiUrlRaml;
 
       suiteSetup(function(done) {
+        this.timeout(120000);
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
         var parser = fixture('parser');
         var enhancer = fixture('enhancer');
@@ -84,17 +85,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         done();
       });
 
-      test('Should compute `_renderQueryParameters`', function() {
-        assert.isArray(element._renderQueryParameters, '_renderQueryParameters is computed');
-        assert.lengthOf(element._renderQueryParameters, 4, '_renderQueryParameters has 4 items');
+      test('Computes `queryModel`', function() {
+        assert.isArray(element.queryModel, 'queryModel is computed');
+        assert.lengthOf(element.queryModel, parsedRaml.length,
+          'queryModel has 5 items');
       });
 
       test('Should compute `hasQueryParameters`', function() {
         assert.isTrue(element.hasQueryParameters, 'hasQueryParameters is true');
       });
 
-      test('Should no compute `_renderUriParameters`', function() {
-        assert.isUndefined(element._renderUriParameters, '_renderUriParameters is not computed');
+      test('Computes empty `uriModel`', function() {
+        assert.lengthOf(element.uriModel, 0);
       });
 
       test('Should compute `hasUriParameters`', function() {
@@ -108,21 +110,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(element.urlParams[1], 'orgId', 'Param #2 is orgId');
       });
 
-      test('Should compute `urlSearchRegexp`', function() {
+      test('Computes `urlSearchRegexp`', function() {
         assert.typeOf(element.urlSearchRegexp, 'regexp', 'urlSearchRegexp is computed');
       });
 
-      test('Should decode URL query parameters', function() {
-        assert.equal(element._renderQueryParameters[0].value,
+      test('Decodes URL query parameters', function() {
+        assert.equal(element.queryModel[0].value,
           'addClass in:file language:js repo:jquery/jquery', 'value is decoded');
       });
 
       test('Should strip parameter name from example value', function() {
-        assert.equal(element._renderQueryParameters[1].value, 'stars');
+        assert.equal(element.queryModel[1].value, 'stars');
       });
 
       test('Should accept first enum as value', function() {
-        assert.equal(element._renderQueryParameters[2].value, 'desc');
+        assert.equal(element.queryModel[2].value, 'desc');
       });
 
       test('Should compute URL value', function() {
@@ -142,6 +144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var parsedRaml;
 
       suiteSetup(function(done) {
+        this.timeout(120000);
         var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
         var parser = fixture('parser');
         var enhancer = fixture('enhancer');
@@ -163,7 +166,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setup(function() {
         element = fixture('basicForm');
         editor = fixture('basic');
-        element.parameters = editor._transformQueryParameters(parsedRaml);
+        element.model = editor._transformModelParameters(parsedRaml);
         TestHelpers.forceXIfStamp(element);
       });
 

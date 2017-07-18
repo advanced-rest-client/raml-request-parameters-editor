@@ -1,0 +1,278 @@
+<!--
+@license
+Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../anypoint-text-field/anypoint-text-field.html">
+<link rel="import" href="../anypoint-styles/dropdown-menu.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../anypoint-icons/anypoint-icons.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-styles/typography.html">
+<!--
+A form element required to provide a value for the query / URI paramter
+depending on model type.
+
+It will render text or numeric inputs or a dropdown for enum values.
+Also, if the item is type of array it will render more than one input
+with ability to add / remove controls.
+-->
+<dom-module id="query-parameter-input">
+  <template strip-whitespace>
+    <style include="anypoint-dropdown-menu-styles">
+    :host {
+      @apply --layout-vertical;
+      @apply --layout-flex;
+      @apply --query-parameter-input;
+    }
+
+    :host([required]) anypoint-text-field {
+      --anypoint-text-field-container-label: {
+        color: var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72));
+      }
+    }
+
+    :host([is-array]) {
+      padding-left: 8px;
+      border-left: 1px var(--query-parameter-input-array-border-left-color, rgba(0, 0, 0, 0.14)) solid;
+    }
+
+    .delete-icon,
+    .array-add-icon {
+      color: var(--accent-color, rgba(0, 0, 0, 0.74));
+      transition: opacity 0.2s ease-in-out;
+      opacity: 0.54;
+      @apply --query-parameter-input-icons;
+    }
+
+    .delete-icon:hover,
+    .array-add-icon:hover {
+      opacity: 0.74;
+      @apply --query-parameter-input-icons-hover;
+    }
+
+    .array-item {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+
+    .array-item anypoint-text-field,
+    paper-dropdown-menu {
+      @apply(--layout-flex);
+    }
+
+    paper-dropdown-menu {
+      margin-right: 8px;
+    }
+
+    paper-button iron-icon {
+      margin-right: 12px;
+    }
+
+    label {
+      @apply(--anypoint-font-body);
+    }
+    </style>
+    <template is="dom-if" if="[[isEnum]]">
+      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]" class="anypoint-dropdown-menu">
+        <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
+          <template is="dom-repeat" items="[[model.enum]]">
+            <paper-item data-value$="[[item]]">[[item]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </template>
+
+    <template is="dom-if" if="[[isBoolean]]">
+      <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]" class="anypoint-dropdown-menu">
+        <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
+          <paper-item data-value="true">True</paper-item>
+          <paper-item data-value="false">False</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </template>
+
+    <template is="dom-if" if="[[isInput]]">
+      <anypoint-text-field
+        label="[[model.inputLabel]]"
+        value="{{value}}"
+        required="[[model.required]]"
+        pattern="[[model.pattern]]"
+        name="[[name]]"
+        auto-validate
+        type="[[model.inputType]]"
+        min="[[model.minimum]]"
+        max="[[model.maximum]]"
+        maxlength="[[model.maxLength]]"
+        minlength="[[model.minLength]]"
+        always-float-label="[[model.inputFloatLabel]]"
+        placeholder="[[model.inputPlaceholder]]"></anypoint-text-field>
+    </template>
+
+    <template is="dom-if" if="[[isArray]]">
+      <label>[[model.inputLabel]]</label>
+      <template is="dom-repeat" items="[[arrayValue]]">
+        <div class="array-item">
+          <anypoint-text-field
+            label="Parameter value"
+            value="{{item.value}}"
+            required="[[model.required]]"
+            pattern="[[model.pattern]]"
+            name="[[name]]"
+            auto-validate
+            type="[[model.inputType]]"
+            min="[[model.minimum]]"
+            max="[[model.maximum]]"
+            maxlength="[[model.maxLength]]"
+            minlength="[[model.minLength]]"
+            no-label-float
+            on-input="_arrayValueChanged">
+          </anypoint-text-field>
+          <template is="dom-if" if="[[index]]">
+            <span>
+              <paper-icon-button class="delete-icon" suffix icon="anypoint:circle-minus" on-tap="_removeArrayValue"></paper-icon-button>
+              <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Remove array value</paper-tooltip>
+            </span>
+          </template>
+        </div>
+      </template>
+      <div class="add-action">
+        <paper-button on-tap="_addArrayValue"><iron-icon class="array-add-icon" icon="anypoint:circle-plus"></iron-icon>Add array value</paper-button>
+      </div>
+    </template>
+  </template>
+  <script>
+  Polymer({
+    is: 'query-parameter-input',
+
+    behaviors: [Polymer.IronFormElementBehavior],
+
+    properties: {
+      model: {
+        type: Object,
+        observer: '_modelChanged'
+      },
+      // Computed value, True if current item is a dropdown with values.
+      isEnum: Boolean,
+      // Computed value, True if current item is an regular input
+      isInput: Boolean,
+      // Computed value, True if current item is an array object
+      isArray: {
+        type: Boolean,
+        reflectToAttribute: true
+      },
+      // Computed value, True if current item is a boolean value
+      isBoolean: Boolean,
+      arrayValue: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      }
+    },
+
+    observers: [
+      '_isArrayChanged(isArray, value)'
+    ],
+
+    resetStates: function() {
+      this.isEnum = undefined;
+      this.isInput = undefined;
+      this.isArray = undefined;
+      this.isBoolean = undefined;
+    },
+    // Sets the template depending on model configuration
+    _modelChanged: function(model) {
+      this.resetStates();
+      if (!model) {
+        return;
+      }
+      if (model.isEnum) {
+        this.isEnum = true;
+        return;
+      }
+      if (model.isArray) {
+        this.isArray = true;
+        return;
+      }
+
+      if (model.isBoolean) {
+        this.isBoolean = true;
+        return;
+      }
+      this.isInput = true;
+    },
+    // Sets array values if needed
+    _isArrayChanged: function(isArray) {
+      if (this.__internalChange) {
+        return;
+      }
+      var v = this.value;
+      if (!v || !isArray) {
+        this.arrayValue = [];
+        return;
+      }
+      this.arrayValue = this._itemsForArray(v);
+    },
+    /**
+     * The `dom-repeat` requires an object to properly support changes.
+     * In order to do this simple values has to be transformed into objects.
+     *
+     * @param {Array<String>} value An array of values.
+     */
+    _itemsForArray: function(value) {
+      var result = [];
+      if (value instanceof Array) {
+        result = value.map(function(item) {
+          return {
+            value: item
+          };
+        });
+      } else {
+        result.push({
+          value: value
+        });
+      }
+      return result;
+    },
+    // Handles array value change and sets the `value` property.
+    _arrayValueChanged: function() {
+      var arr = this.arrayValue;
+      if (arr) {
+        arr = arr.map(function(item) {
+          return item.value;
+        });
+      }
+      this.__internalChange = true;
+      this.set('value', arr);
+      this.__internalChange = false;
+    },
+    // Adds new element to the array value.
+    _addArrayValue: function() {
+      this.push('arrayValue', {value: ''});
+    },
+    // Removes item from array value.
+    _removeArrayValue: function(e) {
+      var repeater = this.$$('template[is="dom-repeat"]');
+      var index = repeater.indexForElement(e.target);
+      this.splice('arrayValue', index, 1);
+      this._arrayValueChanged();
+    }
+  });
+  </script>
+</dom-module>
