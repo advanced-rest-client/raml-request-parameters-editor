@@ -50,7 +50,7 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "arc-demo-helpers": "advanced-rest-client/arc-demo-helpers#^1.0.9",
     "raml-js-parser": "advanced-rest-client/raml-js-parser#^2.0.0",
-    "raml-json-enhance": "advanced-rest-client/raml-json-enhance#^0.1.7",
+    "raml-json-enhance": "advanced-rest-client/raml-json-enhance#^0.2.0",
     "raml-request-url-editor": "advanced-rest-client/raml-request-url-editor#^0.1.15"
   },
   "ignore": [
