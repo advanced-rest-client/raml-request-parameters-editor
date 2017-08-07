@@ -111,7 +111,7 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <template is="dom-if" if="[[hasUriParameters]]">
       <section>
         <h3>URI parameters</h3>
-        <raml-request-parameters-form id="uriParametersForm" form-type="uri" model="{{uriModel}}"></raml-request-parameters-form>
+        <raml-request-parameters-form id="uriParametersForm" form-type="uri" model="{{uriModel}}" optional-opened></raml-request-parameters-form>
       </section>
     </template>
     <template is="dom-if" if="[[hasQueryParameters]]">
