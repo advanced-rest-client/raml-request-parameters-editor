@@ -129,7 +129,7 @@ Custom property | Description | Default
           <div class="value-input">
             <query-parameter-input model="[[item]]" name="[[item.key]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
             <span>
-              <paper-icon-button class="help-icon" suffix icon="anypoint:question" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
+              <paper-icon-button class="help-icon" suffix icon="anypoint:anypoint-question" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
               <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
             </span>
           </div>
