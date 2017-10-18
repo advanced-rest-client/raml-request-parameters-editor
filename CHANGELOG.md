@@ -1,3 +1,13 @@
+<a name="0.2.5"></a>
+## [0.2.5](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.3...0.2.5) (2017-10-18)
+
+
+### Update
+
+* Added ability to remember previously created parameters ([5b4f1b36c827e74801eae21b82f15e79effbf7c5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/5b4f1b36c827e74801eae21b82f15e79effbf7c5))
+
+
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.3...0.2.4) (2017-08-07)
 
