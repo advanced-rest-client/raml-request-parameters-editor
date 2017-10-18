@@ -1,3 +1,19 @@
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.3...0.2.4) (2017-08-07)
+
+
+
+
+<a name="0.2.3"></a>
+## [0.2.3](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.2...0.2.3) (2017-08-07)
+
+
+### Fix
+
+* Fixes #6 - display optional URI parameters ([05bc085b3f99535ef282ac199ab0c670eabdab14](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/05bc085b3f99535ef282ac199ab0c670eabdab14)), closes [#6](https://github.com/advanced-rest-client/raml-request-parameters-editor/issues/6)
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.1...v0.2.2) (2017-07-17)
 

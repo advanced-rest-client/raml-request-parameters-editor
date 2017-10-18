@@ -127,10 +127,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(element.queryModel[2].value, 'desc');
       });
 
-      test('Should compute URL value', function() {
+      test('Should compute URL value', function(done) {
         var url = 'https://{env}.domain.com/{orgId}?q=addClass+in%3Afile+language%3Ajs+' +
           'repo%3Ajquery%2Fjquery&sort=stars&order=desc';
-        assert.equal(element.value, url);
+        setTimeout(function() {
+          assert.equal(element.value, url);
+          done();
+        }, 5);
       });
 
       test('Should compute `hasOptionalQueryParameters`', function() {

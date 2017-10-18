@@ -88,6 +88,7 @@ with ability to add / remove controls.
       @apply(--anypoint-font-body);
     }
     </style>
+    <!-- on-selected-changed="_enumSelectionChanged" -->
     <template is="dom-if" if="[[isEnum]]">
       <paper-dropdown-menu label="[[model.inputLabel]]" name="[[name]]" required="[[model.required]]" class="anypoint-dropdown-menu">
         <paper-listbox class="dropdown-content" attr-for-selected="data-value" selected="{{value}}">
@@ -200,10 +201,12 @@ with ability to add / remove controls.
     _modelChanged: function(model) {
       this.resetStates();
       if (!model) {
+        this._forceNotifyChange();
         return;
       }
       if (model.isEnum) {
         this.isEnum = true;
+        this._forceNotifyChange();
         return;
       }
       if (model.isArray) {
@@ -272,6 +275,16 @@ with ability to add / remove controls.
       var index = repeater.indexForElement(e.target);
       this.splice('arrayValue', index, 1);
       this._arrayValueChanged();
+    },
+    // Sends non-bubbling `value-changed` event with current value.
+    _forceNotifyChange: function() {
+      Polymer.RenderStatus.afterNextRender(this, function() {
+        this.fire('value-changed', {
+          value: this.value
+        }, {
+          bubbles: false
+        });
+      });
     }
   });
   </script>
