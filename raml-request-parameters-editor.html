@@ -127,6 +127,43 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
   <script>
   (function() {
     var NUMBER_INPUT_TYPES = ['number', 'integer', 'float'];
+    var GLOBAL_URI_PARAMS = [];
+    var GLOBAL_QUERY_PARAMS = [];
+    /**
+     * Searches for a mode item in global arrays for an item represented
+     * by the `key`.
+     *
+     * @param {String} key Item's key value
+     * @param {String} type Global list type. Either `uri` or `query`
+     * @return {Object|undefined} Model item or undefined if not found.
+     */
+    function getGlobalParam(key, type) {
+      var model = type === 'uri' ? GLOBAL_URI_PARAMS : GLOBAL_QUERY_PARAMS;
+      if (!model.length) {
+        return;
+      }
+      for (var i = 0, len = model.length; i < len; i++) {
+        if (model[i].key === key) {
+          return model[i];
+        }
+      }
+    }
+    /**
+     * Appends a model item to the global params.
+     *
+     * @param {Object} param Model item to be added to the list.
+     * @param {String} type Global list type. Either `uri` or `query`
+     */
+    function appendGlobalParam(param, type) {
+      var item = getGlobalParam(param.key, type);
+      if (!item) {
+        if (type === 'uri') {
+          GLOBAL_URI_PARAMS.push(param);
+        } else {
+          GLOBAL_QUERY_PARAMS.push(param);
+        }
+      }
+    }
 
     Polymer({
       is: 'raml-request-parameters-editor',
@@ -152,7 +189,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           value: function() {
             return [];
           },
-          computed: '_computeModel(queryParameters.*)'
+          computed: '_computeModel(queryParameters.*)',
+          observer: '_renotifyQuery'
         },
         // Computed value if the `queryParameters` are set.
         hasQueryParameters: {
@@ -171,7 +209,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           value: function() {
             return [];
           },
-          computed: '_computeModel(uriParameters.*)'
+          computed: '_computeModel(uriParameters.*)',
+          observer: '_renotifyUri'
         },
         // Computed value if the `uriParameters` are set.
         hasUriParameters: {
@@ -229,12 +268,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         this.listen(window, 'url-value-changed', '_extValueChangedHandler');
         this.listen(window, 'query-parameter-changed', '_queryParameterChangedHandler');
         this.listen(window, 'uri-parameter-changed', '_uriParameterChangedHandler');
+        this.listen(window, 'raml-selected-object-changed', '_ramlObjectChanged');
       },
 
       detached: function() {
         this.unlisten(window, 'url-value-changed', '_extValueChangedHandler');
         this.unlisten(window, 'query-parameter-changed', '_queryParameterChangedHandler');
         this.unlisten(window, 'uri-parameter-changed', '_uriParameterChangedHandler');
+        this.unlisten(window, 'raml-selected-object-changed', '_ramlObjectChanged');
       },
 
       /**
@@ -251,34 +292,54 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         if (!array || !array.length) {
           return [];
         }
-        return this._transformModelParameters(array);
+        var type = record.path === 'uriParameters' ? 'uri' : 'query';
+        return this._transformModelParameters(array, type);
       },
       /**
        * Transforms query/uri parameters (RAML type) into internal data model
        * used by the form element.
+       *
+       * If the model item was already computed (for different endpoint)
+       * this will recall already computed item.
+       * This way user entered parameters will not get lost when changing
+       * endpoints.
        */
-      _transformModelParameters: function(array) {
+      _transformModelParameters: function(array, type) {
         var items = [];
-
         for (var i = 0, len = array.length; i < len; i++) {
-          var item = Object.assign({}, array[i]);
-          if (item.type === 'array' && item.required) {
-            var example = null;
-            if (item.examples) {
-              example = item.examples[0];
-            } else if (item.example) {
-              example = item.example;
-            }
-            if (example) {
-              example = this.__parseArrayExample(example);
-              item.examples = undefined;
-              item.example = example;
-            }
+          var item = getGlobalParam(array[i].key, type);
+          if (!item) {
+            item = this.computeModelItem(array[i]);
+            appendGlobalParam(item, type);
           }
-          items.push(this._createModelItem(item));
+          items.push(item);
         }
         return items;
       },
+      /**
+       * Computes a model item from passed type properties definition.
+       *
+       * @param {Object} param RAML type property
+       * @return {[type]} [description]
+       */
+      computeModelItem: function(param) {
+        var item = Object.assign({}, param);
+        if (item.type === 'array' && item.required) {
+          var example = null;
+          if (item.examples) {
+            example = item.examples[0];
+          } else if (item.example) {
+            example = item.example;
+          }
+          if (example) {
+            example = this.__parseArrayExample(example);
+            item.examples = undefined;
+            item.example = example;
+          }
+        }
+        return this._createModelItem(item);
+      },
+
       /**
        * Creates a model item to be rendered in the form editor.
        *
@@ -815,6 +876,74 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
           return;
         }
         this._processInput();
+      },
+      /**
+       * A walkaround to notify application about query / uri parameters list
+       * change after `raml-selected-object-changed` event is fired.
+       *
+       * It calles `_renotify` function in next event loop microtask if selected
+       * object is a method.
+       */
+      _ramlObjectChanged: function(e) {
+        if (!e.detail.selectedObject || !e.detail.selectedObject.method) {
+          return;
+        }
+        this.async(function() {
+          this._renotify();
+        }, 2);
+        Polymer.RenderStatus.afterNextRender(this, function() {
+
+        });
+      },
+      /**
+       * Calls `_notifyInitialValueChange` for each model item.
+       */
+      _renotify: function() {
+        this._renotifyModel(this.uriModel, 'uri');
+        this._renotifyModel(this.queryModel, 'query');
+      },
+
+      _renotifyUri: function(newValue, oldValue) {
+        if (!(oldValue === undefined || oldValue.length === 0)) {
+          return;
+        }
+        this._renotifyModel(newValue, 'uri');
+      },
+
+      _renotifyQuery: function(newValue, oldValue) {
+        if (!(oldValue === undefined || oldValue.length === 0)) {
+          return;
+        }
+        this._renotifyModel(newValue, 'query');
+      },
+
+      _renotifyModel: function(model, type) {
+        if (!model) {
+          return;
+        }
+        var context = this;
+        model.forEach(function(item) {
+          Polymer.RenderStatus.afterNextRender(context, function() {
+            this._notifyInitialValueChange(item, type);
+          });
+        });
+      },
+
+      /**
+       * Notifies about a change in the parameters value when a model is initialized.
+       * This allows application to recognize parameter values event if a change
+       * is not notified because existing value is in the editor.
+       *
+       * @param {Object} item A model item.
+       * @param {String} type Param type. `query` or `uri`.
+       */
+      _notifyInitialValueChange: function(item, type) {
+        var name = item.key;
+        var value = item.value;
+        this.fire(type + '-parameter-changed', {
+          name: name,
+          value: value
+        });
       }
     });
   })();

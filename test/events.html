@@ -113,12 +113,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var ev = new CustomEvent('uri-parameter-changed', {
           'detail': {
             'name': 'env',
-            'value': 'api'
+            'value': 'api-2'
           },
           bubbles: true
         });
         document.dispatchEvent(ev);
-
         assert.isTrue(spy.calledOnce, 'Event has been called once');
       });
 
@@ -129,7 +128,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var ev = new CustomEvent('query-parameter-changed', {
           'detail': {
             'name': 'q',
-            'value': 'test'
+            'value': 'test-2'
           },
           bubbles: true
         });
