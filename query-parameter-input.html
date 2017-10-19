@@ -78,7 +78,6 @@ with ability to add / remove controls.
 
     paper-dropdown-menu {
       margin-right: 8px;
-      @apply(--anypoint-dropdown-menu);
     }
 
     paper-button iron-icon {
@@ -87,6 +86,10 @@ with ability to add / remove controls.
 
     label {
       @apply(--anypoint-font-body);
+    }
+      
+    .anypoint-dropdown-menu {
+      margin-right: 0;
     }
     </style>
     <template is="dom-if" if="[[isEnum]]">
