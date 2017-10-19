@@ -261,7 +261,8 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
 
       observers: [
         '_valueChanged(value)',
-        '_computeModelValue(queryModel, uriModel)'
+        '_computeModelValue(queryModel, uriModel)',
+        '_urlChanged(urlParams)'
       ],
 
       attached: function() {
@@ -622,6 +623,14 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
         }
         return encodeURIComponent(str.toString().replace(/\r?\n/g, '\r\n'))
           .replace(/%20/g, '+');
+      },
+      // Updated the editor value when RAML full URL changes
+      _urlChanged: function() {
+        // Async so it gives a chance for the URL panel to update it's value
+        // which is wrong at a time, and this will override this.
+        Polymer.RenderStatus.afterNextRender(this, function() {
+          this._processInput();
+        });
       },
       /**
        * A handler for attribute change function for the `url`.
