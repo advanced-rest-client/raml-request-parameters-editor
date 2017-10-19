@@ -1,0 +1,14 @@
+#%RAML 1.0
+title: Strict validation Test Case
+baseUri: /api
+
+/resource:
+  get:
+    queryParameters:
+      param1:
+        type: string
+        required: false
+    headers:
+      header1:
+        type: string
+        required: false

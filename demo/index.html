@@ -60,9 +60,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <body unresolved>
   <template is="dom-bind" id="app">
     <raml-demo-page raml="{{raml}}" selected-object="{{selected}}" is-method="{{isMethod}}">
+      <paper-item data-url$="[[envTest]]">Environment change with relative URL</paper-item>
+      <paper-item data-url$="[[testRaml]]">Test case 1</paper-item>
+      <paper-item data-url$="[[testRaml2]]">Test case 2</paper-item>
+
       <h1>The raml-request-parameters-editor element</h1>
       <div main>
         <template is="dom-if" if="[[isMethod]]" restamp="true">
+          <div class="env-selector">
+            <select value="{{envUri::input}}">
+              <option value="">RAML base uri</option>
+              <option value="http://api.domain.com/{contextPath}/{contextSubPath}">http://api.domain.com/{contextPath}/{contextSubPath}</option>
+              <option value="api.domain.com/path/">api.domain.com/path/</option>
+            </select>
+          </div>
           <raml-request-parameters-editor query-parameters="[[selected.queryParameters]]" uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}"></raml-request-parameters-editor>
             <div class="url-value">
               <p>Produced URL value is:</p>
@@ -73,5 +84,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </div>
     </raml-demo-page>
   </template>
+  <script>
+  var scope = document.getElementById('app');
+  scope.observers = [
+    '_envUriChanged(envUri)'
+  ];
+  scope._envUriChanged = function(envUri) {
+    var editor = document.querySelector('raml-request-parameters-editor');
+    var urlEditor = document.querySelector('raml-request-url-editor');
+    if (!envUri) {
+      return;
+    }
+    var relative = scope.selected.absoluteUri.replace(scope.raml.baseUri, '');
+    if (envUri[envUri.length - 1] !== '/') {
+      envUri += '/';
+    }
+    if (relative[0] === '/') {
+      relative = relative.substr(1);
+    }
+    var newUrl = envUri + relative;
+    editor.url = newUrl;
+    urlEditor.url = newUrl;
+  };
+  var path = location.pathname;
+  if (~path.indexOf('.html')) {
+    path = path.substr(0, path.lastIndexOf('/') + 1);
+  }
+  var ramlRoot = location.protocol + '//' + location.host + path.replace('demo', 'test');
+  scope.testRaml = ramlRoot + 'test.raml';
+  scope.testRaml2 = ramlRoot + 'test2.raml';
+  scope.envTest = ramlRoot + 'issue-console.raml';
+  </script>
 </body>
 </html>
