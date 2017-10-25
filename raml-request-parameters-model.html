@@ -1,0 +1,543 @@
+<!--
+@license
+Copyright 2017 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../events-target-behavior/events-target-behavior.html">
+<!--
+An element that produces model from RAML Uri/Query properties.
+The model is used by `raml-request-parameters-editor` to generate the form view
+for the user.
+
+Also, model should be propagated to elements responsible for supporting
+URL computation (like an `url-editor`).
+
+The model generator dispatches `uri-parameter-changed` and `uri-parameter-changed`
+custom events when a model changes. It is to force inform the application about the
+change. When RAML values change but result with the same model value (when
+switching between methods of the same endpoint for example) editor dosn't Notifies
+about the change because there's no change in the view.
+
+The element caches comnputed model properties in the memory. This way when the
+user enters a value for a property it will be restored when the user load an
+endpoint with the same property name.
+
+The same model is used by the `raml-request-url-editor` so this element can be
+reused to produce the same model. Because of that this element is not included
+into the editor element.
+
+### Example of use (Polymer app)
+
+```html
+<raml-request-url-editor auto-validate required value="{{url}}"
+  base-uri="[[raml.baseUri]]"
+  endpoint-uri="[[raml.selectedMethod.relativeUri]]"
+  query-model="[[qm]]"
+  uri-model="[[um]]"></raml-request-url-editor>
+
+<raml-request-parameters-editor
+  query-model="[[qm]]"
+  uri-model="[[um]]"
+  has-query-parameters="[[hqp]]"
+  has-uri-parameters="[[hup]]"
+  has-parameters="[[hp]]"></raml-request-parameters-editor>
+
+<raml-request-parameteres-model
+  query-parameters="[[raml.queryParameters]]"
+  uri-parameters="[[raml.allUriParameters]]"
+  query-model="{{qm}}"
+  uri-model="{{um}}"
+  has-query-parameters="{{hqp}}"
+  has-uri-parameters="{{hup}}"
+  has-parameters="{{hp}}"></raml-request-parameteres-model>
+```
+
+### Example for vanilla JavaScript
+
+```html
+<raml-request-url-editor auto-validate required id="url"></raml-request-url-editor>
+<raml-request-parameters-editor id="editor"></raml-request-parameters-editor>
+<raml-request-parameteres-model id="model"></raml-request-parameteres-model>
+
+<script>
+var model = document.getElementById('model');
+var paramsEditor = document.getElementById('editor');
+var urlEditor = document.getElementById('url');
+
+function passDataToView(e) {
+  var type = e.type;
+  type = type.replace('-changed', '');
+  var property = type.replace(/-[a-z]/g, function(m) {
+    return m[1].toUpperCase();
+  });
+  paramsEditor[property] = e.detail.value;
+  urlEditor[property] = e.detail.value;
+}
+
+model.addEventListener('query-model-changed', passDataToView);
+model.addEventListener('uri-model-changed', passDataToView);
+model.addEventListener('has-query-parameters-changed', passDataToView);
+model.addEventListener('has-uri-parameters-changed', passDataToView);
+model.addEventListener('has-parameters-changed', passDataToView);
+
+urlEditor.addEventListener('value-changed', function(e) {
+  console.log(e.detail.value);
+});
+
+var raml = await getRamlSomehow();
+var selected = raml.resources[0].methods[0];
+model.queryParameters = selected.queryParameters;
+model.uriParameters = selected.allUriParameters;
+urlEditor.baseUri = raml.baseUri;
+urlEditor.endpointUri = selected.relativeUri;
+</script>
+```
+
+@group RAML Elements
+@element raml-request-parameters-model
+@demo demo/index.html
+-->
+<script>
+(function() {
+  var NUMBER_INPUT_TYPES = ['number', 'integer', 'float'];
+  var GLOBAL_URI_PARAMS = [];
+  var GLOBAL_QUERY_PARAMS = [];
+  /**
+   * Searches for a mode item in global arrays for an item represented
+   * by the `key`.
+   *
+   * @param {String} key Item's key value
+   * @param {String} type Global list type. Either `uri` or `query`
+   * @return {Object|undefined} Model item or undefined if not found.
+   */
+  function getGlobalParam(key, type) {
+    var model = type === 'uri' ? GLOBAL_URI_PARAMS : GLOBAL_QUERY_PARAMS;
+    if (!model.length) {
+      return;
+    }
+    for (var i = 0, len = model.length; i < len; i++) {
+      if (model[i].key === key) {
+        return model[i];
+      }
+    }
+  }
+  /**
+   * Appends a model item to the global params.
+   *
+   * @param {Object} param Model item to be added to the list.
+   * @param {String} type Global list type. Either `uri` or `query`
+   */
+  function appendGlobalParam(param, type) {
+    var item = getGlobalParam(param.key, type);
+    if (!item) {
+      if (type === 'uri') {
+        GLOBAL_URI_PARAMS.push(param);
+      } else {
+        GLOBAL_QUERY_PARAMS.push(param);
+      }
+    }
+  }
+
+  Polymer({
+    is: 'raml-request-parameters-model',
+
+    behaviors: [
+      ArcBehaviors.EventsTargetBehavior
+    ],
+
+    properties: {
+      // List of RAML definitoin of query parameters
+      queryParameters: {
+        type: Array,
+        observer: '_renotifyQuery'
+      },
+      // List of all URI parameters that can be applied to selected RAML method.
+      uriParameters: {
+        type: Array,
+        observer: '_renotifyUri'
+      },
+      /**
+       * Model generated for query parameters.
+       */
+      queryModel: {
+        type: Array,
+        notify: true,
+        value: function() {
+          return [];
+        },
+        computed: '_computeQueryModel(queryParameters)'
+      },
+      /**
+       * Model generated for query parameters.
+       */
+      uriModel: {
+        type: Array,
+        notify: true,
+        value: function() {
+          return [];
+        },
+        computed: '_computeUriModel(uriParameters)'
+      },
+      // Computed value if the `queryParameters` are set.
+      hasQueryParameters: {
+        type: Boolean,
+        notify: true,
+        computed: '_computeHasParameters(queryModel)'
+      },
+      // Computed value if the `uriParameters` are set.
+      hasUriParameters: {
+        type: Boolean,
+        notify: true,
+        computed: '_computeHasParameters(uriModel)'
+      },
+      // Computed value, true if has query or URI parameters.
+      hasParameters: {
+        type: Boolean,
+        notify: true,
+        computed: '_computeParametersSet(hasUriParameters, hasQueryParameters)'
+      }
+    },
+
+    _attachListeners: function(node) {
+      this.listen(node, 'uri-parameter-changed', '_modelParamChanged');
+      this.listen(node, 'query-parameter-changed', '_modelParamChanged');
+      this.listen(node, 'raml-selected-object-changed', '_ramlObjectChanged');
+    },
+
+    _detachListeners: function(node) {
+      this.unlisten(node, 'uri-parameter-changed', '_modelParamChanged');
+      this.unlisten(node, 'query-parameter-changed', '_modelParamChanged');
+      this.unlisten(node, 'raml-selected-object-changed', '_ramlObjectChanged');
+    },
+
+    /**
+     * Computes a model of for the URI parameters.
+     *
+     * @return {Array} Data model for the URI parameters.
+     */
+    _computeUriModel: function(uriParameters) {
+      if (!uriParameters) {
+        return [];
+      }
+      return this._transformModelParameters(uriParameters, 'uri');
+    },
+    /**
+     * Computes a model of for the Query parameters.
+     *
+     * @return {Array} Data model for the Query parameters.
+     */
+    _computeQueryModel: function(queryParameters) {
+      if (!queryParameters) {
+        return [];
+      }
+      return this._transformModelParameters(queryParameters, 'query');
+    },
+    /**
+     * Transforms query/uri parameters (RAML type) into internal data model
+     * used by the form element.
+     *
+     * If the model item was already computed (for different endpoint)
+     * this will recall cached item. This way user entered parameters will not
+     * get lost when changing endpoints. To properly assign type values
+     * pass the `type` argument.
+     *
+     * @param {Array} array List of RAML type properties representing either
+     * query or URI property.
+     * @param {String} type Type of the property. Can be either `uri` or `query`
+     */
+    _transformModelParameters: function(array, type) {
+      var items = [];
+      for (var i = 0, len = array.length; i < len; i++) {
+        var item = getGlobalParam(array[i].key, type);
+        if (!item) {
+          item = this.computeModelItem(array[i]);
+          appendGlobalParam(item, type);
+        }
+        items.push(item);
+      }
+      return items;
+    },
+    /**
+     * Computes a model item from passed type properties definition.
+     *
+     * @param {Object} param RAML type property
+     * @return {Object} Data model for RAML type.
+     */
+    computeModelItem: function(param) {
+      var item = Object.assign({}, param);
+      if (item.type === 'array' && item.required) {
+        var example = null;
+        if (item.examples) {
+          example = item.examples[0];
+        } else if (item.example) {
+          example = item.example;
+        }
+        if (example) {
+          example = this.__parseArrayExample(example);
+          item.examples = undefined;
+          item.example = example;
+        }
+      }
+      return this._createModelItem(item);
+    },
+
+    /**
+     * Creates a model item to be rendered in the form editor.
+     *
+     * @param {Object} item A RAML's type definition
+     * @return {Object} The same RAML type as in the argument byt with
+     * computed model properties.
+     */
+    _createModelItem: function(item) {
+      item.isEnum = !!(item.enum && item.enum.length);
+      item.isArray = item.type === 'array';
+      item.hasDescription = !!item.description;
+      item.inputLabel = item.displayName || item.name || 'Value';
+      if (item.required) {
+        item.inputLabel += '*';
+      }
+      // Defines value input type
+      item.inputType = this._computeItemInputType(item);
+      // If true then it renders dropdown
+      item.isBoolean = item.inputType === 'boolean';
+      if (!item.pattent) {
+        if (item.inputType === 'date') {
+          item.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
+        }
+      }
+      // Unifies examples. This is done by the enhancer but I am keep it
+      // here so not enhanced input should be computed as well.
+      if (item.examples && item.examples.length && item.examples[0]) {
+        item.inputPlaceholder = 'Example: ' + item.examples[0];
+      } else if (item.example && typeof item.example === 'string') {
+        item.inputPlaceholder = 'Example: ' + item.example;
+      }
+      if (item.inputPlaceholder) {
+        item.inputFloatLabel = true;
+      } else {
+        item.inputFloatLabel = false;
+      }
+      // Below sets a value of the item if it's required and any sample value
+      // can be set (from default, examples, enums)
+      if (item.required && typeof item.default !== 'undefined' && !item.value) {
+        item.value = item.isArray ? this.__parseArrayExample(item.default) :
+          item.default;
+      }
+      if (typeof item.value === 'undefined' && item.required) {
+        if (item.examples) {
+          item.value = item.examples[0];
+        } else if (item.example) {
+          item.value = item.example;
+        }
+        if (item.value && item.value.indexOf && item.value.indexOf(item.name + '=') === 0) {
+          item.value = item.value.substr(item.name.length + 1);
+        }
+        if (typeof item.value === 'undefined' && item.isEnum) {
+          item.value = item.enum[0];
+        }
+      }
+      // Just in case if the example / default value was encoded.
+      if (item.value && typeof item.value === 'string') {
+        item.value = decodeURIComponent(item.value.replace(/\+/g, ' '));
+      }
+      // Normalizes value.
+      if (item.value && item.isArray && typeof item.value === 'string') {
+        item.value = [item.value];
+      }
+      if (item.isArray && !item.value) {
+        item.value = [''];
+      }
+      // In the end it's always string...
+      if (item.isBoolean && typeof item.value === 'boolean') {
+        item.value = String(item.value);
+      }
+      return item;
+    },
+    /**
+     * Tries to JSON parse an examples value of the array type item and
+     * returns the value as an array (if parsed with success) or the input
+     * string if it couldn't be parsed.
+     *
+     * This function is intended to be used if the model item is an array.
+     *
+     * @param {String} example A value of the example property to be parsed.
+     * @return {Array|String} Array if parsed or string if there was a parse
+     * error.
+     */
+    __parseArrayExample: function(example) {
+      try {
+        var arr = JSON.parse(example);
+        if (arr instanceof Array) {
+          return arr;
+        }
+      } catch (e) {}
+      return example;
+    },
+    /**
+     * Computes rendered item input field type based on RAML definition.
+     *
+     * It will be either numeric or text. Type will be determined from
+     * item's type or, in case of array, item's items property.
+     *
+     * @return {String} Input field type.
+     */
+    _computeItemInputType: function(item) {
+      if (item.type === 'array') {
+        if (typeof item.items === 'string') {
+          return this.__computeInputType(item.items);
+        }
+        return this.__computeInputType(item.items.type);
+      }
+      return this.__computeInputType(item.type);
+    },
+    // Returns input type based on the RAML type name.
+    __computeInputType: function(type) {
+      if (type && NUMBER_INPUT_TYPES.indexOf(type) !== -1) {
+        return 'number';
+      } else if (type === 'boolean') {
+        return 'boolean';
+      } else if (type === 'date-only') {
+        return 'date';
+      }
+      return 'text';
+    },
+
+    // Computes if passed argument is an array and has values.
+    _computeHasParameters: function(params) {
+      return !!(params && params instanceof Array && params.length);
+    },
+    // Computes if any parameters are available.
+    _computeParametersSet: function(hasUriParameters, hasQueryParameters) {
+      return hasUriParameters || hasQueryParameters;
+    },
+
+    _modelParamChanged: function(e) {
+      if (e.target === this) {
+        return;
+      }
+      if (e.type === 'query-parameter-changed') {
+        this._updateModelItem('query', e.detail);
+      } else {
+        this._updateModelItem('uri', e.detail);
+      }
+    },
+
+    _updateModelItem: function(type, detail) {
+      var name = detail.name;
+      if (!name) {
+        return;
+      }
+      var modelPath = type + 'Model';
+      var model = this.get(modelPath);
+      if (!model || !model.length) {
+        return;
+      }
+
+      for (var i = 0, len = model.length; i < len; i++) {
+        if (model[i].name === name) {
+          this.set([modelPath, i, 'value'], detail.value);
+          break;
+        }
+      }
+    },
+    /**
+     * A walkaround to notify application about query / uri parameters list
+     * change after `raml-selected-object-changed` event is fired.
+     *
+     * It calles `_renotify` function in next event loop microtask if selected
+     * object is a method.
+     */
+    _ramlObjectChanged: function(e) {
+      if (!e.detail.selectedObject || !e.detail.selectedObject.method) {
+        return;
+      }
+      this.async(function() {
+        this._renotify();
+      }, 2);
+    },
+    /**
+     * Calls `_notifyInitialValueChange` for each model item.
+     */
+    _renotify: function() {
+      this._renotifyModel(this.uriModel, 'uri');
+      this._renotifyModel(this.queryModel, 'query');
+    },
+
+    _renotifyUri: function(newValue, oldValue) {
+      if (!(oldValue === undefined || oldValue.length === 0)) {
+        return;
+      }
+      this._renotifyModel(newValue, 'uri');
+    },
+
+    _renotifyQuery: function(newValue, oldValue) {
+      if (!(oldValue === undefined || oldValue.length === 0)) {
+        return;
+      }
+      this._renotifyModel(newValue, 'query');
+    },
+    /**
+     * Dispatches change events for a model.
+     * Events are dispatched in next microtask of the event loop.
+     * Each model is debounced for 20 miliseconds to avoid duplicated events
+     * when both model and raml-path-change event occur.
+     *
+     * @param {Array} model Data model
+     * @param {String} type Data type. Either `uri` or `query`.
+     */
+    _renotifyModel: function(model, type) {
+      if (!model) {
+        return;
+      }
+      this.debounce('renotify-model-' + type, function() {
+        model.forEach(function(item) {
+          Polymer.RenderStatus.afterNextRender(this, function() {
+            this._notifyInitialValueChange(item, type);
+          });
+        }, this);
+      }, 20);
+    },
+
+    /**
+     * Notifies about a change in the parameters value when a model is initialized.
+     * This allows application to recognize parameter values event if a change
+     * is not notified because existing value is in the editor.
+     *
+     * @param {Object} item A model item.
+     * @param {String} type Param type. `query` or `uri`.
+     */
+    _notifyInitialValueChange: function(item, type) {
+      var name = item.key;
+      var value = item.value;
+      this.fire(type + '-parameter-changed', {
+        name: name,
+        value: value
+      });
+    }
+
+    /**
+     * Fired when an URI parameter value change in this editor.
+     *
+     * @event uri-parameter-changed
+     * @param {String} name The name of the parameter
+     * @param {String} value The value of the parameter
+     */
+    /**
+     * Fired when a query parameter value change in this editor.
+     *
+     * @event query-parameter-changed
+     * @param {String} name The name of the parameter
+     * @param {String} value The value of the parameter
+     */
+  });
+})();
+</script>

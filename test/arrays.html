@@ -16,8 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
     <script src="../../iron-test-helpers/test-helpers.js"></script>
-    <script src="../../iron-test-helpers/mock-interactions.js"></script>
-
+    <script src="helper.js"></script>
     <link rel="import" href="../../raml-js-parser/raml-js-parser.html">
     <link rel="import" href="../../raml-json-enhance/raml-json-enhance.html">
     <link rel="import" href="../raml-request-parameters-editor.html">
@@ -39,70 +38,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <test-fixture id="basic">
       <template>
         <raml-request-parameters-editor></raml-request-parameters-editor>
+        <raml-request-parameters-model></raml-request-parameters-model>
       </template>
     </test-fixture>
 
     <script>
-    /* global fixture, assert, TestHelpers */
+    /* global fixture, assert, TestHelpers,RamlRequestTestHelper */
     suite('array query parameters', function() {
-
       var element;
-      var ramlQueryParameters;
-      var ramlUriParameters;
-      var apiUrlRaml;
+      var ramlQuery;
+      var ramlUri;
       var parameter;
 
-      suiteSetup(function(done) {
+      suiteSetup(function() {
         this.timeout(120000);
-        var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-        var parser = fixture('parser');
-        var enhancer = fixture('enhancer');
-        enhancer.addEventListener('raml-json-enhance-ready', function(e) {
-          var raml = e.detail.json;
-          ramlQueryParameters = raml.resources[0].methods[0].queryParameters;
-          ramlUriParameters =  raml.resources[0].methods[0].allUriParameters;
-          apiUrlRaml =  raml.resources[0].methods[0].absoluteUri;
-          done();
-        });
-
-        parser.loadApi(baseUrl + 'test.raml')
-        .then(function(data) {
-          enhancer.json = data.json.specification;
-        })
-        .catch(function(e) {
-          done(new Error('Parser error: ' + (e.message || 'Some error happened...')));
+        return RamlRequestTestHelper.getTestRaml('test.raml')
+        .then(function(result) {
+          ramlQuery = result.query;
+          ramlUri = result.uri;
         });
       });
 
       setup(function() {
-        element = fixture('basic');
-        element.queryParameters = ramlQueryParameters;
-        element.uriParameters = ramlUriParameters;
-        element.url = apiUrlRaml;
+        var fx = fixture('basic');
+        element = fx[0];
+        RamlRequestTestHelper.setupModel(fx[0], fx[1], ramlUri, ramlQuery);
         TestHelpers.forceXIfStamp(element);
         parameter = element.queryModel[4];
       });
 
-      test('Rendered query parameter should have array value', function() {
+      test('Rendered query parameter has array value', function() {
         assert.typeOf(parameter.value, 'array');
       });
 
-      test('Rendered query parameter should have isArray flag', function() {
+      test('Rendered query parameter has isArray flag', function() {
         assert.isTrue(parameter.isArray);
-      });
-
-      test('Element produces URL with array value', function() {
-        element.set(['queryModel', 4, 'value'], ['test']);
-        element._processInput();
-        var match = element.value.match(/&arrayQueryParameter=/g);
-        assert.equal(match.length, 1);
-      });
-
-      test('Element produces URL with array values', function() {
-        element.set(['queryModel', 4, 'value'], ['test', 'test2']);
-        element._processInput();
-        var match = element.value.match(/&arrayQueryParameter=/g);
-        assert.equal(match.length, 2);
       });
     });
     </script>
