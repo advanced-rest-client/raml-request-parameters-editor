@@ -123,7 +123,7 @@ Custom property | Description | Default
       margin-bottom: 8px;
     }
     </style>
-    <form is="iron-form" id="form">
+    <form is="iron-form">
       <template is="dom-repeat" items="{{model}}" items-repeater>
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
           <div class="value-input">
@@ -171,20 +171,25 @@ Custom property | Description | Default
       formType: String
     },
 
+    _getForm: function() {
+      return this.$$('form');
+    },
+
     // Overidden from Polymer.IronValidatableBehavior. Will set the `invalid`
     // attribute automatically, which should be used for styling.
     _getValidity: function() {
-      return this.$.form.validate();
+      return this._getForm().validate();
     },
     // Link to the form's serialize function.
     serialize: function() {
-      return this.$.form.serialize();
+      return this._getForm().serialize();
     },
     // Opens the documentation for item.
     _openDocs: function(e) {
-      var template = this.$.form.querySelector('[items-repeater]');
+      var form = this._getForm();
+      var template = form.querySelector('[items-repeater]');
       var model = template.modelForElement(e.target);
-      var collapse = this.$.form.querySelector('.param-value:nth-child(' + (model.index + 1) +
+      var collapse = form.querySelector('.param-value:nth-child(' + (model.index + 1) +
         ') iron-collapse');
       if (!collapse) {
         return;
