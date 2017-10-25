@@ -1,0 +1,210 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="helper.js"></script>
+    <link rel="import" href="../../raml-js-parser/raml-js-parser.html">
+    <link rel="import" href="../../raml-json-enhance/raml-json-enhance.html">
+    <link rel="import" href="../raml-request-parameters-model.html">
+  </head>
+  <body>
+
+    <test-fixture id="parser">
+      <template>
+        <raml-js-parser json></raml-js-parser>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="enhancer">
+      <template>
+        <raml-json-enhance></raml-json-enhance>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="basic">
+      <template>
+        <raml-request-parameters-model></raml-request-parameters-model>
+      </template>
+    </test-fixture>
+    <script>
+    /* global fixture, assert, RamlRequestTestHelper */
+
+    suite('Model computation', function() {
+      var element;
+      var ramlQuery;
+      var ramlUri;
+
+      suiteSetup(function() {
+        this.timeout(120000);
+        return RamlRequestTestHelper.getTestRaml('test.raml')
+        .then(function(result) {
+          ramlQuery = result.query;
+          ramlUri = result.uri;
+        });
+      });
+
+      setup(function() {
+        element = fixture('basic');
+        element.queryParameters = ramlQuery;
+        element.uriParameters = ramlUri;
+      });
+
+      test('Computes `queryModel`', function() {
+        assert.isArray(element.queryModel, 'queryModel is computed');
+        assert.lengthOf(element.queryModel, ramlQuery.length, 'queryModel has 5 items');
+      });
+
+      test('Should compute `hasQueryParameters`', function() {
+        assert.isTrue(element.hasQueryParameters, 'hasQueryParameters is true');
+      });
+
+      test('Computes empty `uriModel`', function() {
+        assert.lengthOf(element.uriModel, ramlUri.length);
+      });
+
+      test('Should compute `hasUriParameters`', function() {
+        assert.isTrue(element.hasUriParameters, 'hasUriParameters is true');
+      });
+
+      test('Decodes URL query parameters', function() {
+        assert.equal(element.queryModel[0].value,
+          'addClass in:file language:js repo:jquery/jquery', 'value is decoded');
+      });
+
+      test('Should strip parameter name from example value', function() {
+        assert.equal(element.queryModel[1].value, 'stars');
+      });
+
+      test('Should accept first enum as value', function() {
+        assert.equal(element.queryModel[2].value, 'desc');
+      });
+    });
+
+    suite('Model - notification', function() {
+      var element;
+      var ramlQuery;
+      var ramlUri;
+
+      suiteSetup(function() {
+        this.timeout(120000);
+        return RamlRequestTestHelper.getTestRaml('test.raml')
+        .then(function(result) {
+          ramlQuery = result.query;
+          ramlUri = result.uri;
+        });
+      });
+
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('Notifies query paramaeters change - on load', function(done) {
+        var called = 0;
+        var maxCalls = ramlQuery.length;
+        var params = [];
+        element.addEventListener('query-parameter-changed', function clb(e) {
+          called++;
+          params.push(e.detail);
+          if (called === maxCalls) {
+            element.removeEventListener('query-parameter-changed', clb);
+            assert.lengthOf(params, ramlQuery.length);
+            done();
+          }
+        });
+        element.queryParameters = ramlQuery;
+      });
+
+      test('Notifies uri paramaeters change - on load', function(done) {
+        var called = 0;
+        var maxCalls = ramlUri.length;
+        var params = [];
+        element.addEventListener('uri-parameter-changed', function clb(e) {
+          called++;
+          params.push(e.detail);
+          if (called === maxCalls) {
+            element.removeEventListener('uri-parameter-changed', clb);
+            assert.lengthOf(params, ramlUri.length);
+            done();
+          }
+        });
+        element.uriParameters = ramlUri;
+      });
+    });
+
+    suite('Events api', function() {
+      var element;
+      var ramlQuery;
+      var ramlUri;
+
+      suiteSetup(function() {
+        this.timeout(120000);
+        return RamlRequestTestHelper.getTestRaml('test.raml')
+        .then(function(result) {
+          ramlQuery = result.query;
+          ramlUri = result.uri;
+        });
+      });
+
+      setup(function() {
+        element = fixture('basic');
+        element.queryParameters = ramlQuery;
+        element.uriParameters = ramlUri;
+        assert.lengthOf(element.uriModel, 2);
+        assert.lengthOf(element.queryModel, 5);
+      });
+
+      test('Updates the uri model from the event', function() {
+        var changed = 'test-changed';
+        RamlRequestTestHelper.fire('uri-parameter-changed', {
+          name: 'env',
+          value: changed
+        });
+        assert.equal(element.uriModel[0].value, changed);
+      });
+
+      test('Does not updates unknown uri property', function() {
+        var changed = 'other-changed';
+        RamlRequestTestHelper.fire('uri-parameter-changed', {
+          name: 'invalid',
+          value: changed
+        });
+        assert.lengthOf(element.uriModel, 2);
+        assert.notEqual(element.uriModel[0].value, changed);
+      });
+
+      test('Updates the query model from the event', function() {
+        var changed = 'test-changed';
+        RamlRequestTestHelper.fire('query-parameter-changed', {
+          name: 'sort',
+          value: changed
+        });
+        assert.equal(element.queryModel[1].value, changed);
+      });
+
+      test('Does not updates unknown query property', function() {
+        var changed = 'other-changed';
+        RamlRequestTestHelper.fire('query-parameter-changed', {
+          name: 'invalid',
+          value: changed
+        });
+        assert.lengthOf(element.queryModel, 5);
+        assert.notEqual(element.queryModel[1].value, changed);
+      });
+    });
+    </script>
+
+  </body>
+</html>
