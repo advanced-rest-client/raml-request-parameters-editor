@@ -17,13 +17,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <title>raml-request-parameters-editor demo</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
-
   <link rel="import" href="../../arc-demo-helpers/raml-demo-page.html">
   <link rel="import" href="../../anypoint-styles/typography.html">
   <link rel="import" href="../raml-request-parameters-editor.html">
-  <link rel="import" href="../../raml-request-url-editor/raml-request-url-editor.html">
-
+  <link rel="import" href="../raml-request-parameters-model.html">
   <style is="custom-style">
   html {
     font-size: 62%;
@@ -53,23 +50,98 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     margin-left: 16px;
   }
 
+  output {
+    display: block;
+    margin: 12px 0;
+  }
+
+  output label {
+    display: block;
+    font-weight: 500;
+  }
+
+  output code {
+    white-space: pre-wrap;
+  }
   </style>
 </head>
 <body unresolved>
   <template is="dom-bind" id="app">
     <raml-demo-page raml="{{raml}}" selected-object="{{selected}}" is-method="{{isMethod}}">
+      <paper-item data-url$="[[testRaml]]">Test case 1</paper-item>
+      <paper-item data-url$="[[testRaml2]]">Test case 2</paper-item>
+
       <h1>The raml-request-parameters-editor element</h1>
       <div main>
         <template is="dom-if" if="[[isMethod]]" restamp="true">
-          <raml-request-parameters-editor query-parameters="[[selected.queryParameters]]" uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}"></raml-request-parameters-editor>
-            <div class="url-value">
+
+          <raml-request-parameters-editor query-model="[[qm]]" uri-model="[[um]]" has-query-parameters="[[hqp]]" has-uri-parameters="[[hup]]" has-parameters="[[hp]]"></raml-request-parameters-editor>
+          <raml-request-parameters-model query-parameters="[[selected.queryParameters]]" uri-parameters="[[selected.allUriParameters]]" query-model="{{qm}}" uri-model="{{um}}" has-query-parameters="{{hqp}}" has-uri-parameters="{{hup}}" has-parameters="{{hp}}"  base-uri="[[selected.absoluteUri]]"></raml-request-parameters-model>
+          <output>
+            <label>URI properties</label>
+            <code>[[uriProperties]]</code>
+          </output>
+          <output>
+            <label>Query properties</label>
+            <code>[[queryProperties]]</code>
+          </output>
+            <!-- <div class="url-value">
               <p>Produced URL value is:</p>
               <raml-request-url-editor auto-validate required uri-parameters="[[selected.allUriParameters]]" url="[[selected.absoluteUri]]" value="{{url}}" ></raml-request-url-editor>
-            </div>
+            </div> -->
         </template>
         <p hidden$="[[isMethod]]">Select a method</p>
       </div>
     </raml-demo-page>
   </template>
+  <script>
+  var scope = document.getElementById('app');
+  scope.uriProperties = '';
+  scope.queryProperties = '';
+  scope.observers = [
+    '_envUriChanged(envUri)',
+    '_selectedChanged(selected)'
+  ];
+  scope._selectedChanged = function() {
+    scope.uriProperties = '';
+    scope.queryProperties = '';
+    // When model is the same for query / URI parameters as for previous endpoint
+    // there's no change event (for performance reasons). In next event loop
+    // tasks check for existing properties.
+    // Path selection change can also be handled in one of the `raml-parh-selector`
+    // events.
+    setTimeout(function() {
+      scope._uriChanged();
+      scope._queryChanged();
+    }, 1);
+  };
+  scope._uriChanged = function() {
+    var result = {};
+    if (scope.um) {
+      scope.um.forEach(function(item) {
+        result[item.key] = item.value;
+      });
+    }
+    scope.uriProperties = JSON.stringify(result, null, 2);
+  };
+  scope._queryChanged = function() {
+    var result = {};
+    if (scope.qm) {
+      scope.qm.forEach(function(item) {
+        result[item.key] = item.value;
+      });
+    }
+    scope.queryProperties = JSON.stringify(result, null, 2);
+  };
+  window.addEventListener('uri-parameter-changed', scope._uriChanged);
+  window.addEventListener('query-parameter-changed', scope._queryChanged);
+  var path = location.pathname;
+  if (~path.indexOf('.html')) {
+    path = path.substr(0, path.lastIndexOf('/') + 1);
+  }
+  var ramlRoot = location.protocol + '//' + location.host + path.replace('demo', 'test');
+  scope.testRaml = ramlRoot + 'test.raml';
+  scope.testRaml2 = ramlRoot + 'test2.raml';
+  </script>
 </body>
 </html>

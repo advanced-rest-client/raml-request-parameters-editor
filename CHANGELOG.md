@@ -1,3 +1,45 @@
+<a name="0.3.2"></a>
+## [0.3.2](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.1...0.3.2) (2017-10-25)
+
+
+
+
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.7...0.3.1) (2017-10-25)
+
+
+### Breaking
+
+* Changes according to https://github.com/mulesoft/api-console/issues/535 ([5e52387c0c8402fe03b4cdb819e9d230e3c78e3d](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/5e52387c0c8402fe03b4cdb819e9d230e3c78e3d))
+
+
+
+<a name="0.2.7"></a>
+## [0.2.7](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.6...0.2.7) (2017-10-19)
+
+
+
+
+<a name="0.2.6"></a>
+## [0.2.6](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.5...0.2.6) (2017-10-19)
+
+
+### Fix
+
+* Fixing https://github.com/mulesoft/api-console/issues/502 ([e908c17c1c32ae50961a1adcbb0539e30d3c5c82](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/e908c17c1c32ae50961a1adcbb0539e30d3c5c82))
+
+
+
+<a name="0.2.5"></a>
+## [0.2.5](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.3...0.2.5) (2017-10-18)
+
+
+### Update
+
+* Added ability to remember previously created parameters ([5b4f1b36c827e74801eae21b82f15e79effbf7c5](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/5b4f1b36c827e74801eae21b82f15e79effbf7c5))
+
+
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.3...0.2.4) (2017-08-07)
 
