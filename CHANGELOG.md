@@ -1,3 +1,13 @@
+<a name="0.3.1"></a>
+## [0.3.1](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.7...0.3.1) (2017-10-25)
+
+
+### Breaking
+
+* Changes according to https://github.com/mulesoft/api-console/issues/535 ([5e52387c0c8402fe03b4cdb819e9d230e3c78e3d](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/5e52387c0c8402fe03b4cdb819e9d230e3c78e3d))
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.2.6...0.2.7) (2017-10-19)
 
