@@ -48,7 +48,7 @@ Custom property | Description | Default
     <style>
      :host {
       display: block;
-      @apply(--raml-request-parameters-form);
+      @apply --raml-request-parameters-form;
 
       --paper-input-container-label: {
         color: var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.48));
@@ -56,7 +56,7 @@ Custom property | Description | Default
     }
 
     .param-value {
-      @apply(--raml-request-parameters-editor-row);
+      @apply --raml-request-parameters-editor-row;
     }
 
     .param-value.optional {
@@ -71,12 +71,12 @@ Custom property | Description | Default
     }
 
     .param-value .input {
-      @apply(--layout-horizontal);
-      @apply(--layout-flex);
+      @apply --layout-horizontal;
+      @apply --layout-flex;
     }
 
     .docs {
-      @apply(--arc-font-common-base);
+      @apply --arc-font-common-base;
       font-size: 13px !important;
       font-weight: 200;
       line-height: 24px;
@@ -108,18 +108,18 @@ Custom property | Description | Default
     }
 
     .value-input {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
-      @apply(--layout-flex);
+      @apply --layout-horizontal;
+      @apply --layout-center;
+      @apply --layout-flex;
     }
 
     .optional-toggle-button {
       font-size: 13px;
-      @apply(--raml-request-parameters-form-optional-toggle-button);
+      @apply --raml-request-parameters-form-optional-toggle-button;
     }
 
     query-parameter-input {
-      @apply(--layout-flex);
+      @apply --layout-flex;
       margin-bottom: 8px;
     }
     </style>
