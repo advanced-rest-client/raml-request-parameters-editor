@@ -113,6 +113,10 @@ Custom property | Description | Default
       @apply --layout-flex;
     }
 
+    .value-input.is-array {
+      @apply --layout-end;
+    }
+
     .optional-toggle-button {
       font-size: 13px;
       @apply --raml-request-parameters-form-optional-toggle-button;
@@ -126,12 +130,14 @@ Custom property | Description | Default
     <form is="iron-form">
       <template is="dom-repeat" items="{{model}}" items-repeater>
         <div class$="[[_computeRowClass(item, optionalOpened)]]">
-          <div class="value-input">
+          <div class$="value-input [[_computeTypeClass(item.isArray)]]">
             <query-parameter-input model="[[item]]" name="[[item.key]]" value="{{item.value}}" required$="[[item.required]]" on-value-changed="_parameterValueChanged"></query-parameter-input>
-            <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!item.hasDescription]]" on-tap="_openDocs"></paper-icon-button>
-              <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
-            </span>
+            <template is="dom-if" if="[[item.hasDescription]]">
+              <span>
+                <paper-icon-button class="help-icon" suffix icon="arc:help" on-tap="_openDocs"></paper-icon-button>
+                <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
+              </span>
+            </template>
           </div>
           <template is="dom-if" if="[[item.hasDescription]]">
             <div class="docs">
@@ -233,6 +239,12 @@ Custom property | Description | Default
         name: name,
         value: value
       });
+    },
+    /**
+     * Computes array class for the input element.
+     */
+    _computeTypeClass: function(isArray) {
+      return isArray ? 'is-array' : '';
     }
   });
   </script>
