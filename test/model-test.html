@@ -163,7 +163,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         element.queryParameters = ramlQuery;
         element.uriParameters = ramlUri;
         assert.lengthOf(element.uriModel, 2);
-        assert.lengthOf(element.queryModel, 5);
+        assert.lengthOf(element.queryModel, 6);
       });
 
       test('Updates the uri model from the event', function() {
@@ -200,7 +200,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           name: 'invalid',
           value: changed
         });
-        assert.lengthOf(element.queryModel, 5);
+        assert.lengthOf(element.queryModel, 6);
         assert.notEqual(element.queryModel[1].value, changed);
       });
     });
