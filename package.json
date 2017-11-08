@@ -4,6 +4,7 @@
   "license": "Apache-2.0 OR CC-BY-4.0",
   "description": "An element responsible for displaying a form of query / uri parameters",
   "devDependencies": {
+    "bower": "^1.8.0",
     "polymer-cli": "^1.2.0"
   },
   "engines": {
