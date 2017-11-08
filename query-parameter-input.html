@@ -72,7 +72,7 @@ with ability to add / remove controls.
 
     .array-item paper-input,
     paper-dropdown-menu {
-      @apply(--layout-flex);
+      @apply --layout-flex;
     }
 
     paper-dropdown-menu {
@@ -84,7 +84,20 @@ with ability to add / remove controls.
     }
 
     label {
-      @apply(--arc-font-caption);
+      @apply --arc-font-caption;
+    }
+
+    .add-action {
+      @apply --query-parameter-input-add-actions;
+    }
+
+    .add-action:hover,
+    .add-action:hover .array-add-icon {
+      @apply --query-parameter-input-add-actions-hover;
+    }
+
+    .array-add-icon {
+      @apply --query-parameter-input-add-icon;
     }
     </style>
     <!-- on-selected-changed="_enumSelectionChanged" -->
