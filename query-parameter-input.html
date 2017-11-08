@@ -99,6 +99,10 @@ with ability to add / remove controls.
     .array-add-icon {
       @apply --query-parameter-input-add-icon;
     }
+
+    .add-array-button {
+      @apply --query-parameter-input-add-button;
+    }
     </style>
     <!-- on-selected-changed="_enumSelectionChanged" -->
     <template is="dom-if" if="[[isEnum]]">
@@ -165,7 +169,7 @@ with ability to add / remove controls.
         </div>
       </template>
       <div class="add-action">
-        <paper-button on-tap="_addArrayValue"><iron-icon class="array-add-icon" icon="arc:add-circle-outline"></iron-icon>Add array value</paper-button>
+        <paper-button on-tap="_addArrayValue" class="add-array-button"><iron-icon class="array-add-icon" icon="arc:add-circle-outline"></iron-icon>Add array value</paper-button>
       </div>
     </template>
   </template>
