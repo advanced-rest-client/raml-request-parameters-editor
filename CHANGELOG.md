@@ -1,3 +1,15 @@
+<a name="0.3.3"></a>
+## [0.3.3](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.2...0.3.3) (2017-11-08)
+
+
+### Update
+
+* Array items renders help icon at bottom. ([8df8823655750b63360c132e600a23176d91f639](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/8df8823655750b63360c132e600a23176d91f639))
+* Updated CSS mixins syntax ([6ab844d7a3130c524c47178467777192a68a017b](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/6ab844d7a3130c524c47178467777192a68a017b))
+* Updated styles for the input element. ([621b03a8c7a9701e666879f5a9217b58c1ff5b80](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/621b03a8c7a9701e666879f5a9217b58c1ff5b80))
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.1...0.3.2) (2017-10-25)
 
