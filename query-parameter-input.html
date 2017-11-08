@@ -34,6 +34,12 @@ with ability to add / remove controls.
 <dom-module id="query-parameter-input">
   <template strip-whitespace>
     <style>
+    :host {
+      @apply --layout-vertical;
+      @apply --layout-flex;
+      @apply --query-parameter-input;
+    }
+
     :host([required]) paper-input {
       --paper-input-container-label: {
         color: var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72));
@@ -45,26 +51,32 @@ with ability to add / remove controls.
       border-left: 1px rgba(0, 0, 0, 0.14) solid;
     }
 
-    .help-icon {
+    .delete-icon,
+    .array-add-icon {
       color: var(--accent-color, rgba(0, 0, 0, 0.74));
       transition: opacity 0.2s ease-in-out;
       opacity: 0.54;
+      @apply --query-parameter-input-icons;
     }
 
-    .help-icon:hover {
+    .delete-icon:hover,
+    .array-add-icon:hover {
       opacity: 0.74;
+      @apply --query-parameter-input-icons-hover;
     }
 
     .array-item {
-      @apply(--layout-horizontal);
+      @apply --layout-horizontal;
+      @apply --layout-center;
     }
 
-    .array-item paper-input{
+    .array-item paper-input,
+    paper-dropdown-menu {
       @apply(--layout-flex);
     }
 
     paper-dropdown-menu {
-      width: 100%;
+      margin-right: 8px;
     }
 
     paper-button iron-icon {
@@ -72,7 +84,7 @@ with ability to add / remove controls.
     }
 
     label {
-      @apply(--paper-font-caption);
+      @apply(--arc-font-caption);
     }
     </style>
     <!-- on-selected-changed="_enumSelectionChanged" -->
@@ -133,14 +145,14 @@ with ability to add / remove controls.
           </paper-input>
           <template is="dom-if" if="[[index]]">
             <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:remove-circle-outline" on-tap="_removeArrayValue"></paper-icon-button>
+              <paper-icon-button class="delete-icon" suffix icon="arc:remove-circle-outline" on-tap="_removeArrayValue"></paper-icon-button>
               <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Remove array value</paper-tooltip>
             </span>
           </template>
         </div>
       </template>
       <div class="add-action">
-        <paper-button on-tap="_addArrayValue"><iron-icon class="help-icon" icon="arc:add-circle-outline"></iron-icon>Add array value</paper-button>
+        <paper-button on-tap="_addArrayValue"><iron-icon class="array-add-icon" icon="arc:add-circle-outline"></iron-icon>Add array value</paper-button>
       </div>
     </template>
   </template>

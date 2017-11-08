@@ -129,16 +129,16 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     <style>
      :host {
       display: block;
-      @apply(--raml-request-parameters-editor);
+      @apply --raml-request-parameters-editor;
     }
 
     h3 {
-      @apply(--raml-request-parameters-editor-subheader);
+      @apply --raml-request-parameters-editor-subheader;
     }
 
     .params-title {
-      @apply(--layout-horizontal);
-      @apply(--layout-center);
+      @apply --layout-horizontal;
+      @apply --layout-center;
     }
 
     .params-title h3 {
@@ -151,11 +151,11 @@ Also, use variables and misins defined for `paper-input` to style inputs, and
     }
 
     .empty-message {
-      @apply(--raml-request-parameters-editor-no-params);
+      @apply --raml-request-parameters-editor-no-params;
     }
 
     .empty-message p {
-      @apply(--raml-request-parameters-editor-no-params-message);
+      @apply --raml-request-parameters-editor-no-params-message;
     }
     </style>
     <section hidden$="[[hasParameters]]" class="empty-message">
