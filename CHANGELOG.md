@@ -1,3 +1,21 @@
+<a name="0.3.5"></a>
+## [0.3.5](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.4...0.3.5) (2017-11-08)
+
+
+### Fix
+
+* Fixed tests definition for changed RAML ([232f3e0c68cb520e9a83d69d8cc79faec669f884](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/232f3e0c68cb520e9a83d69d8cc79faec669f884))
+
+### Update
+
+* Added bower dependency ([ece527031d286549728a1e661f6bd7d4724046f8](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/ece527031d286549728a1e661f6bd7d4724046f8))
+* Added mixin for array add button. ([c3d8459c269aeabfbef0847ebfc59ee816364b58](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/c3d8459c269aeabfbef0847ebfc59ee816364b58))
+* Added mixin for array inputs. ([e82b5564bf171383ac6a019e6276e304eb453c63](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/e82b5564bf171383ac6a019e6276e304eb453c63))
+* Added more styling options to style array item hover. ([b47f50dcec2fb36f2cfaf3b876233437e83a7cb4](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/b47f50dcec2fb36f2cfaf3b876233437e83a7cb4))
+* Added sauce configuration for tests ([3eadb649721a6a7f97acb10c9801f9fbdd291aa4](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/3eadb649721a6a7f97acb10c9801f9fbdd291aa4))
+
+
+
 <a name="0.3.4"></a>
 ## [0.3.4](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.3...0.3.4) (2017-11-08)
 
