@@ -42,3 +42,26 @@ baseUriParameters:
         type: string[]
         description: |
           This is an array value parameter.
+/path-param-string/{pathparam}:
+  uriParameters:
+    pathparam:
+      type: string
+      example: "aParam"
+  head:
+    responses:
+      201:
+        body:
+          application/json:
+            example: { "path-param-string": 20 }
+
+
+/path-param-enum/{pathparam}:
+  uriParameters:
+    pathparam:
+      enum: ["option-a", "option-b"]
+  patch:
+    responses:
+      201:
+        body:
+          application/json:
+            example: { "path-param-enum": 40 }
