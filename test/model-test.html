@@ -93,6 +93,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     });
 
+    suite('Model caching', function() {
+      var element;
+      var raml;
+
+      suiteSetup(function() {
+        this.timeout(120000);
+        return RamlRequestTestHelper.getTestRaml('test.raml', true)
+        .then(function(result) {
+          raml = result;
+          element = fixture('basic');
+        });
+      });
+
+      setup(function() {
+        element.uriParameters = raml.resources[1].methods[0].allUriParameters;
+      });
+
+      // Order is important in this test!
+
+      test('Changes mode values', function() {
+        element.uriParameters[0].value = 'test-value-1';
+        element.uriParameters = raml.resources[2].methods[0].allUriParameters;
+        assert.notEqual(element.uriParameters[0].value, 'test-value-1');
+        element.uriParameters[0].value = 'option-b';
+      });
+
+      test('Changes mode values', function() {
+        assert.equal(element.uriParameters[0].value, 'test-value-1');
+        element.uriParameters = raml.resources[2].methods[0].allUriParameters;
+        assert.equal(element.uriParameters[0].value, 'option-b');
+      });
+    });
+
     suite('Model - notification', function() {
       var element;
       var ramlQuery;
