@@ -1,3 +1,13 @@
+<a name="0.3.7"></a>
+## [0.3.7](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.6...0.3.7) (2017-11-29)
+
+
+### Fix
+
+* Fixes #9 - model caching issue for different types ([02195da23ea23fbea9fb1e7b1332c8cb5ce39d72](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/02195da23ea23fbea9fb1e7b1332c8cb5ce39d72)), closes [#9](https://github.com/advanced-rest-client/raml-request-parameters-editor/issues/9)
+
+
+
 <a name="0.3.6"></a>
 ## [0.3.6](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.5...0.3.6) (2017-11-08)
 

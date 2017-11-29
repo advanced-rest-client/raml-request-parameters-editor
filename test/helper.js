@@ -1,16 +1,22 @@
 /* global Promise, fixture */
 var RamlRequestTestHelper = {};
-RamlRequestTestHelper.getTestRaml = function(file) {
+RamlRequestTestHelper.getTestRaml = function(file, returnRaml) {
   return new Promise(function(resolve, reject) {
     var baseUrl = location.href.substr(0, location.href.lastIndexOf('/') + 1);
     var parser = fixture('parser');
     var enhancer = fixture('enhancer');
     enhancer.addEventListener('raml-json-enhance-ready', function(e) {
       var raml = e.detail.json;
-      resolve({
-        query: raml.resources[0].methods[0].queryParameters,
-        uri: raml.resources[0].methods[0].allUriParameters
-      });
+      var result;
+      if (returnRaml) {
+        result = raml;
+      } else {
+        result = {
+          query: raml.resources[0].methods[0].queryParameters,
+          uri: raml.resources[0].methods[0].allUriParameters
+        };
+      }
+      resolve(result);
     });
     parser.loadApi(baseUrl + file)
     .then(function(data) {

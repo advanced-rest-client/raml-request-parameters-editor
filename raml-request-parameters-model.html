@@ -112,37 +112,59 @@ urlEditor.endpointUri = selected.relativeUri;
   var GLOBAL_URI_PARAMS = [];
   var GLOBAL_QUERY_PARAMS = [];
   /**
+   * Generates a common key from ramlType definition and model item.
+   *
+   * @param {Object} data Either RAML type object or model item.
+   * @return {String} Generated key to search for the item.
+   */
+  function getKey(data) {
+    var key = data.key + '-' + data.type;
+    if (data.enum || data.isEnum) {
+      key += '-enum';
+    }
+    if (data.required) {
+      key += '-required';
+    }
+    return key;
+  }
+  /**
    * Searches for a mode item in global arrays for an item represented
    * by the `key`.
    *
-   * @param {String} key Item's key value
+   * @param {Object} ramlType RAML type declaration
    * @param {String} type Global list type. Either `uri` or `query`
    * @return {Object|undefined} Model item or undefined if not found.
    */
-  function getGlobalParam(key, type) {
+  function getGlobalParam(ramlType, type) {
     var model = type === 'uri' ? GLOBAL_URI_PARAMS : GLOBAL_QUERY_PARAMS;
     if (!model.length) {
       return;
     }
+    var key = getKey(ramlType);
     for (var i = 0, len = model.length; i < len; i++) {
       if (model[i].key === key) {
-        return model[i];
+        return model[i].model;
       }
     }
   }
   /**
    * Appends a model item to the global params.
    *
-   * @param {Object} param Model item to be added to the list.
+   * @param {Object} model Model item to be added to the list.
    * @param {String} type Global list type. Either `uri` or `query`
    */
-  function appendGlobalParam(param, type) {
-    var item = getGlobalParam(param.key, type);
+  function appendGlobalParam(model, type) {
+    var item = getGlobalParam(model, type);
     if (!item) {
+      var key = getKey(model);
+      var data = {
+        key: key,
+        model: model
+      };
       if (type === 'uri') {
-        GLOBAL_URI_PARAMS.push(param);
+        GLOBAL_URI_PARAMS.push(data);
       } else {
-        GLOBAL_QUERY_PARAMS.push(param);
+        GLOBAL_QUERY_PARAMS.push(data);
       }
     }
   }
@@ -257,7 +279,7 @@ urlEditor.endpointUri = selected.relativeUri;
     _transformModelParameters: function(array, type) {
       var items = [];
       for (var i = 0, len = array.length; i < len; i++) {
-        var item = getGlobalParam(array[i].key, type);
+        var item = getGlobalParam(array[i], type);
         if (!item) {
           item = this.computeModelItem(array[i]);
           appendGlobalParam(item, type);
