@@ -1,3 +1,14 @@
+<a name="0.3.9"></a>
+## [0.3.9](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.8...0.3.9) (2018-01-03)
+
+
+### Fix
+
+* Fixes #10 - model initial notifications. ([aa227801cd4f1e7388a6adaa842f5731f7454184](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/aa227801cd4f1e7388a6adaa842f5731f7454184)), closes [#10](https://github.com/advanced-rest-client/raml-request-parameters-editor/issues/10)
+* Fixing dev dependency resolution ([face60a7b28e852691c227b041d70ec7a35863eb](https://github.com/advanced-rest-client/raml-request-parameters-editor/commit/face60a7b28e852691c227b041d70ec7a35863eb))
+
+
+
 <a name="0.3.8"></a>
 ## [0.3.8](https://github.com/advanced-rest-client/raml-request-parameters-editor/compare/0.3.7...0.3.8) (2017-11-29)
 
