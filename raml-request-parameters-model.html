@@ -179,13 +179,11 @@ urlEditor.endpointUri = selected.relativeUri;
     properties: {
       // List of RAML definitoin of query parameters
       queryParameters: {
-        type: Array,
-        observer: '_renotifyQuery'
+        type: Array
       },
       // List of all URI parameters that can be applied to selected RAML method.
       uriParameters: {
-        type: Array,
-        observer: '_renotifyUri'
+        type: Array
       },
       /**
        * Model generated for query parameters.
@@ -196,7 +194,8 @@ urlEditor.endpointUri = selected.relativeUri;
         value: function() {
           return [];
         },
-        computed: '_computeQueryModel(queryParameters)'
+        computed: '_computeQueryModel(queryParameters)',
+        observer: '_renotifyQuery'
       },
       /**
        * Model generated for query parameters.
@@ -207,7 +206,8 @@ urlEditor.endpointUri = selected.relativeUri;
         value: function() {
           return [];
         },
-        computed: '_computeUriModel(uriParameters)'
+        computed: '_computeUriModel(uriParameters)',
+        observer: '_renotifyUri'
       },
       // Computed value if the `queryParameters` are set.
       hasQueryParameters: {
@@ -232,13 +232,11 @@ urlEditor.endpointUri = selected.relativeUri;
     _attachListeners: function(node) {
       this.listen(node, 'uri-parameter-changed', '_modelParamChanged');
       this.listen(node, 'query-parameter-changed', '_modelParamChanged');
-      this.listen(node, 'raml-selected-object-changed', '_ramlObjectChanged');
     },
 
     _detachListeners: function(node) {
       this.unlisten(node, 'uri-parameter-changed', '_modelParamChanged');
       this.unlisten(node, 'query-parameter-changed', '_modelParamChanged');
-      this.unlisten(node, 'raml-selected-object-changed', '_ramlObjectChanged');
     },
 
     /**
@@ -471,28 +469,6 @@ urlEditor.endpointUri = selected.relativeUri;
         }
       }
     },
-    /**
-     * A walkaround to notify application about query / uri parameters list
-     * change after `raml-selected-object-changed` event is fired.
-     *
-     * It calles `_renotify` function in next event loop microtask if selected
-     * object is a method.
-     */
-    _ramlObjectChanged: function(e) {
-      if (!e.detail.selectedObject || !e.detail.selectedObject.method) {
-        return;
-      }
-      this.async(function() {
-        this._renotify();
-      }, 2);
-    },
-    /**
-     * Calls `_notifyInitialValueChange` for each model item.
-     */
-    _renotify: function() {
-      this._renotifyModel(this.uriModel, 'uri');
-      this._renotifyModel(this.queryModel, 'query');
-    },
 
     _renotifyUri: function(newValue, oldValue) {
       if (!(oldValue === undefined || oldValue.length === 0)) {
@@ -520,13 +496,9 @@ urlEditor.endpointUri = selected.relativeUri;
       if (!model) {
         return;
       }
-      this.debounce('renotify-model-' + type, function() {
-        model.forEach(function(item) {
-          Polymer.RenderStatus.afterNextRender(this, function() {
-            this._notifyInitialValueChange(item, type);
-          });
-        }, this);
-      }, 20);
+      model.forEach(function(item) {
+        this._notifyInitialValueChange(item, type);
+      }, this);
     },
 
     /**
