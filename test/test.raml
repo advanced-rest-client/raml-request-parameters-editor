@@ -9,6 +9,10 @@ baseUriParameters:
     enum: [staging, api]
     example: staging
 /{orgId}:
+  uriParameters:
+    orgId:
+      type: string
+      example: test
   get:
     queryParameters:
       q:
