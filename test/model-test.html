@@ -147,13 +147,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('Notifies query paramaeters change - on load', function(done) {
         var called = 0;
         var maxCalls = ramlQuery.length;
+        var required = ['q', 'sort', 'order'];
         var params = [];
         element.addEventListener('query-parameter-changed', function clb(e) {
           called++;
-          params.push(e.detail);
+          // Tests that each parameter is called only once.
+          assert.equal(params.indexOf(e.detail.name), -1, 'Parameter notified only once');
+          params.push(e.detail.name);
+          // Tests that required with example values are notified with value
+          if (required.indexOf(e.detail.name) !== -1) {
+            assert.ok(e.detail.value, 'Value is set');
+          }
+          // console.log(e.detail.name, ': ', e.detail.value);
           if (called === maxCalls) {
             element.removeEventListener('query-parameter-changed', clb);
-            assert.lengthOf(params, ramlQuery.length);
             done();
           }
         });
@@ -163,13 +170,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       test('Notifies uri paramaeters change - on load', function(done) {
         var called = 0;
         var maxCalls = ramlUri.length;
+        var required = ['orgId'];
         var params = [];
         element.addEventListener('uri-parameter-changed', function clb(e) {
           called++;
-          params.push(e.detail);
+          assert.equal(params.indexOf(e.detail.name), -1, 'Parameter notified only once');
+          params.push(e.detail.name);
+          if (required.indexOf(e.detail.name) !== -1) {
+            assert.ok(e.detail.value, 'Value is set');
+          }
           if (called === maxCalls) {
             element.removeEventListener('uri-parameter-changed', clb);
-            assert.lengthOf(params, ramlUri.length);
             done();
           }
         });
